@@ -1,0 +1,293 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/20/2023  13:04:45  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\\C51\BIN\BL51.EXE STARTUP.obj, demo3.obj TO demo3
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  STARTUP.obj (?C_STARTUP)
+  demo3.obj (DEMO3)
+  D:\\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  demo3 (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000BH     UNIT         ?DT?DEMO3
+            IDATA   0013H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    009AH     0072H     UNIT         ?PR?DSPTASK?DEMO3
+            CODE    010CH     005DH     UNIT         ?PR?_FDISP?DEMO3
+            CODE    0169H     0040H     UNIT         ?PR?TIMER_ISR?DEMO3
+            CODE    01A9H     0019H     UNIT         ?PR?KEY_SERVICE?DEMO3
+            CODE    01C2H     0017H     UNIT         ?PR?MAIN?DEMO3
+            CODE    01D9H     0015H     UNIT         ?C_INITSEG
+            CODE    01EEH     0013H     UNIT         ?PR?INIT_SPECIAL_INTERRUPTS?DEMO3
+            CODE    0201H     0011H     UNIT         ?PR?INIT_TIMER0?DEMO3
+
+
+
+OVERLAY MAP OF MODULE:   demo3 (?C_STARTUP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?DEMO3
+  +--> ?C_INITSEG
+
+?PR?MAIN?DEMO3
+  +--> ?PR?INIT_TIMER0?DEMO3
+  +--> ?PR?INIT_SPECIAL_INTERRUPTS?DEMO3
+  +--> ?PR?_FDISP?DEMO3
+
+*** NEW ROOT ***************************************************
+
+?PR?TIMER_ISR?DEMO3
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/20/2023  13:04:45  PAGE 2
+
+
+  +--> ?PR?DSPTASK?DEMO3
+  +--> ?PR?KEY_SERVICE?DEMO3
+
+
+
+SYMBOL TABLE OF MODULE:  demo3 (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:000EH         SEGMENT       ?C_C51STARTUP
+  I:0013H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:0011H         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:000EH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:000EH         LINE#         133
+  C:0010H         LINE#         134
+  C:0011H         LINE#         135
+  C:0012H         LINE#         136
+  C:0014H         LINE#         185
+  C:0017H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        DEMO3
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:009AH         PUBLIC        dsptask
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  D:0008H         PUBLIC        dspbuf
+  B:0090H.0       PUBLIC        D_SER
+  B:00A8H.4       PUBLIC        ES
+  C:010CH         PUBLIC        _fdisp
+  B:00B0H.5       PUBLIC        KEY1
+  B:00B0H.4       PUBLIC        KEY2
+  C:01A9H         PUBLIC        key_service
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/20/2023  13:04:45  PAGE 3
+
+
+  B:00B8H.4       PUBLIC        PS
+  B:0090H.1       PUBLIC        D_SRCLK
+  C:01C2H         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+  D:000CH         PUBLIC        clocktime
+  D:000EH         PUBLIC        sel
+  C:01EEH         PUBLIC        init_special_interrupts
+  B:00A8H.1       PUBLIC        ET0
+  B:00A8H.3       PUBLIC        ET1
+  D:008CH         PUBLIC        TH0
+  B:00A8H.0       PUBLIC        EX0
+  B:00A8H.2       PUBLIC        EX1
+  D:008AH         PUBLIC        TL0
+  B:0090H.2       PUBLIC        D_RCLK
+  C:0169H         PUBLIC        timer_isr
+  B:00B8H.1       PUBLIC        PT0
+  B:0088H.4       PUBLIC        TR0
+  B:00B8H.2       PUBLIC        PX1
+  C:0201H         PUBLIC        init_timer0
+  D:000FH         PUBLIC        adcount
+  D:0011H         PUBLIC        key_sta
+  D:0012H         PUBLIC        key_num
+  -------         PROC          INIT_TIMER0
+  C:0201H         LINE#         16
+  C:0201H         LINE#         17
+  C:0201H         LINE#         18
+  C:0204H         LINE#         19
+  C:0207H         LINE#         20
+  C:020AH         LINE#         21
+  C:020DH         LINE#         22
+  C:020FH         LINE#         23
+  C:0211H         LINE#         24
+  -------         ENDPROC       INIT_TIMER0
+  -------         PROC          INIT_SPECIAL_INTERRUPTS
+  C:01EEH         LINE#         26
+  C:01EEH         LINE#         27
+  C:01EEH         LINE#         28
+  C:01F0H         LINE#         29
+  C:01F2H         LINE#         30
+  C:01F4H         LINE#         31
+  C:01F6H         LINE#         32
+  C:01F8H         LINE#         33
+  C:01FAH         LINE#         34
+  C:01FCH         LINE#         35
+  C:01FEH         LINE#         36
+  C:0200H         LINE#         37
+  -------         ENDPROC       INIT_SPECIAL_INTERRUPTS
+  -------         PROC          DSPTASK
+  -------         DO            
+  D:0005H         SYMBOL        i
+  D:0007H         SYMBOL        a
+  D:0006H         SYMBOL        b
+  -------         ENDDO         
+  C:009AH         LINE#         39
+  C:009AH         LINE#         40
+  C:009AH         LINE#         43
+  C:00A6H         LINE#         44
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/20/2023  13:04:45  PAGE 4
+
+
+  C:00A6H         LINE#         45
+  C:00AAH         LINE#         46
+  C:00AEH         LINE#         47
+  C:00B2H         LINE#         48
+  C:00B4H         LINE#         49
+  C:00B4H         LINE#         50
+  C:00B8H         LINE#         51
+  C:00B8H         LINE#         52
+  C:00C0H         LINE#         53
+  C:00C2H         LINE#         54
+  C:00C4H         LINE#         55
+  C:00C6H         LINE#         56
+  C:00C8H         LINE#         57
+  C:00CFH         LINE#         58
+  C:00D3H         LINE#         59
+  C:00DAH         LINE#         60
+  C:00DDH         LINE#         61
+  C:00DFH         LINE#         62
+  C:00E9H         LINE#         63
+  C:00EDH         LINE#         64
+  C:00EDH         LINE#         65
+  C:00F5H         LINE#         66
+  C:00F7H         LINE#         67
+  C:00F9H         LINE#         68
+  C:00FBH         LINE#         69
+  C:00FDH         LINE#         70
+  C:0101H         LINE#         71
+  C:0105H         LINE#         72
+  C:0107H         LINE#         73
+  C:0109H         LINE#         74
+  C:010BH         LINE#         75
+  -------         ENDPROC       DSPTASK
+  -------         PROC          KEY_SERVICE
+  C:01A9H         LINE#         77
+  C:01A9H         LINE#         78
+  C:01A9H         LINE#         79
+  C:01AEH         LINE#         80
+  C:01B1H         LINE#         81
+  C:01B1H         LINE#         82
+  C:01B3H         LINE#         83
+  C:01B3H         LINE#         84
+  C:01B5H         LINE#         85
+  C:01B8H         LINE#         86
+  C:01B8H         LINE#         87
+  C:01BEH         LINE#         88
+  C:01C1H         LINE#         89
+  C:01C1H         LINE#         91
+  -------         ENDPROC       KEY_SERVICE
+  -------         PROC          TIMER_ISR
+  C:0169H         LINE#         93
+  C:0178H         LINE#         95
+  C:017AH         LINE#         96
+  C:0182H         LINE#         97
+  C:0188H         LINE#         98
+  C:0188H         LINE#         99
+  C:018CH         LINE#         100
+  C:018FH         LINE#         101
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/20/2023  13:04:45  PAGE 5
+
+
+  C:0192H         LINE#         102
+  C:019AH         LINE#         103
+  C:019AH         LINE#         104
+  C:019CH         LINE#         105
+  -------         ENDPROC       TIMER_ISR
+  -------         PROC          _FDISP
+  D:0006H         SYMBOL        n
+  -------         DO            
+  D:0005H         SYMBOL        c
+  -------         ENDDO         
+  C:010CH         LINE#         107
+  C:010CH         LINE#         108
+  C:010CH         LINE#         110
+  C:0137H         LINE#         111
+  C:0137H         LINE#         112
+  C:013BH         LINE#         113
+  C:013FH         LINE#         114
+  C:0143H         LINE#         115
+  C:0147H         LINE#         116
+  C:014BH         LINE#         117
+  C:014FH         LINE#         118
+  C:0153H         LINE#         119
+  C:0157H         LINE#         120
+  C:015BH         LINE#         121
+  C:015DH         LINE#         122
+  C:015DH         LINE#         123
+  C:0160H         LINE#         124
+  C:0163H         LINE#         125
+  C:0166H         LINE#         126
+  C:0168H         LINE#         127
+  -------         ENDPROC       _FDISP
+  -------         PROC          MAIN
+  C:01C2H         LINE#         129
+  C:01C2H         LINE#         130
+  C:01C2H         LINE#         131
+  C:01C5H         LINE#         132
+  C:01C8H         LINE#         133
+  C:01C8H         LINE#         134
+  C:01C8H         LINE#         135
+  C:01CDH         LINE#         136
+  C:01CDH         LINE#         137
+  C:01D4H         LINE#         138
+  C:01D7H         LINE#         139
+  C:01D7H         LINE#         140
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        DEMO3
+
+Program Size: data=20.0 xdata=0 code=522
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

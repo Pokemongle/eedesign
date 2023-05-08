@@ -1,0 +1,171 @@
+C51 COMPILER V9.01   DEMO3                                                                 04/20/2023 13:04:45 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE DEMO3
+OBJECT MODULE PLACED IN demo3.OBJ
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE demo3.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg51.h>                              // special function register declarations
+   2          #include<absacc.h>
+   3          
+   4          void init_timer0();
+   5          void init_special_interrupts();
+   6          
+   7          unsigned char        dspbuf[4]={0xef,0xef,0xef,0xef},sel=0,key_sta=0,key_num;
+   8          unsigned int         clocktime=0,adcount=0;
+   9          
+  10          sbit D_SER     = P1^0;
+  11          sbit D_SRCLK   = P1^1;
+  12          sbit D_RCLK    = P1^2;
+  13          sbit KEY1      = P3^5;
+  14          sbit KEY2      = P3^4;
+  15          //---------------------------------------------------------------------------------------
+  16          void init_timer0(void)              //  定时器0初始
+  17            {
+  18   1        TMOD &= 0XF0;
+  19   1        TMOD |= 0X02;
+  20   1        TL0 = 0X06;
+  21   1        TH0 = 0X06;
+  22   1        TR0 = 1;
+  23   1        ET0 = 1;
+  24   1        }
+  25          //---------------------------------------------------------------------------------------
+  26          void init_special_interrupts(void)   //  中断设置
+  27            {
+  28   1        EX0 = 0;
+  29   1        ET0 = 1;
+  30   1        EX1 = 0;
+  31   1        ET1 = 0;
+  32   1        ES  = 1;
+  33   1        EA  = 1;
+  34   1        PT0 = 0;
+  35   1        PX1 = 1;
+  36   1        PS  = 0;
+  37   1        }
+  38          //---------------------------------------------------------------------------------------
+  39          void dsptask()
+  40            {
+  41   1        unsigned char i;
+  42   1        unsigned char a,b;
+  43   1        switch(sel)
+  44   1         {
+  45   2         case 0:  a=0x01;  break;
+  46   2         case 1:  a=0x02;  break;
+  47   2         case 2:  a=0x04;  break;
+  48   2         default: a=0x08;
+  49   2         }
+  50   1       for(b=0x80,i=0;i<8;i++)
+  51   1          {
+  52   2          if(a&b)  D_SER=1;
+  53   2          else     D_SER=0;
+  54   2          D_SRCLK=0;
+  55   2          D_SRCLK=1;
+C51 COMPILER V9.01   DEMO3                                                                 04/20/2023 13:04:45 PAGE 2   
+
+  56   2          D_SRCLK=0;
+  57   2          b=b>>1;  b=b&0x7f;
+  58   2          }
+  59   1        a=dspbuf[sel];
+  60   1        key_num=sel;
+  61   1        sel++;
+  62   1        if(sel>=4) sel=0;
+  63   1        for(b=0x80,i=0;i<8;i++)
+  64   1          {
+  65   2          if(a&b)  D_SER=1;
+  66   2          else     D_SER=0;
+  67   2          D_SRCLK=0;
+  68   2          D_SRCLK=1;
+  69   2          D_SRCLK=0;
+  70   2          b=b>>1;  b=b&0x7fff;
+  71   2          }
+  72   1        D_RCLK=0;
+  73   1        D_RCLK=1;
+  74   1        D_RCLK=0;
+  75   1        }
+  76          //----------------------------
+  77          void key_service()
+  78            {
+  79   1        if(key_sta&0x01) return;             // key_sta.0=1
+  80   1         if(KEY1)
+  81   1              {
+  82   2          key_num=key_num+1;                    
+  83   2              key_sta=key_sta|0x01;              // 置key_sta.0=1
+  84   2              }
+  85   1         else if(KEY2)
+  86   1                {
+  87   2                    key_num=key_num+5;   
+  88   2                key_sta=key_sta|0x01;        // 置key_sta.0=1
+  89   2                    }
+  90   1                        
+  91   1        }
+  92          //----------------------------
+  93          void timer_isr() interrupt 1           //定时器0中断处理
+  94            {
+  95   1        EA=0;
+  96   1        adcount++;
+  97   1        if(adcount==20)                      // 1/4*20 = 5ms
+  98   1          {
+  99   2          adcount=0;
+ 100   2          dsptask();
+ 101   2          key_service();
+ 102   2          clocktime++;
+ 103   2          }
+ 104   1        EA=1;
+ 105   1        }
+ 106          //---------------------------------------------------------------------------------------
+ 107          fdisp(int n)
+ 108            {
+ 109   1        char  c;
+ 110   1        switch(n)
+ 111   1          {
+ 112   2          case 0:  c=0x11;  break;
+ 113   2          case 1:  c=0x7d;  break;
+ 114   2          case 2:  c=0x23;  break;
+ 115   2          case 3:  c=0x29;  break;
+ 116   2          case 4:  c=0x4d;  break;
+ 117   2          case 5:  c=0x89;  break;
+C51 COMPILER V9.01   DEMO3                                                                 04/20/2023 13:04:45 PAGE 3   
+
+ 118   2          case 6:  c=0x81;  break;
+ 119   2          case 7:  c=0x3d;  break;
+ 120   2          case 8:  c=0x01;  break;
+ 121   2          default: c=0x09; 
+ 122   2          }
+ 123   1        dspbuf[0]=0xff;
+ 124   1        dspbuf[1]=0xff;
+ 125   1        dspbuf[2]=0xff;
+ 126   1        dspbuf[3]=c;
+ 127   1        }
+ 128          //---------------------------
+ 129          void main(void)                   // 主函数
+ 130            {
+ 131   1        init_timer0();                  //初始化定时器0
+ 132   1        init_special_interrupts();      //设置中断
+ 133   1        for(;;)
+ 134   1          { 
+ 135   2          if(key_sta&0x01)              // key_sta.0==1?
+ 136   2               {             
+ 137   3               fdisp(key_num); 
+ 138   3               key_sta=key_sta&0xfe;           // 置key_sta.0=0
+ 139   3               }
+ 140   2              }
+ 141   1        }
+ 142          //-----------------------------------End------------------------------------------------
+ 143          
+*** WARNING C290 IN LINE 127 OF DEMO3.C: missing return value
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    355    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,569 @@
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE TESTMAIN
+OBJECT MODULE PLACED IN testmain.OBJ
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE testmain.c BROWSE INCDIR(..\..\demos) DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <STC12C5A.h>   // special function register declarations
+   2          #include <absacc.h>
+   3          #include <intrins.h> //void _nop_(void) 
+   4          #include <math.h>
+   5          
+   6          // #define DA_CH1 XBYTE[0x5fff]
+   7          // #define DA_CH2 XBYTE[0x3fff]
+   8          #define DA_CH1 XBYTE[0x4000]
+   9          #define DA_CH2 XBYTE[0x2000]
+  10          #define DAC_1 XBYTE[0x2000]
+  11          
+  12          #define AD_LEN 250
+  13          #define DA_LEN 7000
+  14          #define GEN_LEN 200
+  15          
+  16          void init_timer0();
+  17          void init_special_interrupts();
+  18          void init_ad();
+  19          void init_da_generator();
+  20          void fdisp_float(float n);
+  21          void model_select();
+  22          void model2();
+  23          
+  24          unsigned char dspbuf[4] = {0xef, 0xef, 0xef, 0xef}, sel = 0, key_sta = 0, intr_count = 0;
+  25          unsigned int key_num = 0, model[2] = {0, 0};
+  26          unsigned int dspcount = 0, adcount = 0;
+  27          unsigned int da_p = 0, daplayback_p = 0, clearflag = 0, dag_p = 0, wave_flag = 0, wave_amp = 0, wave_fre =
+             - 0;
+  28          unsigned int adresult = 0;
+  29          int ampl = 0, amp = 0, fre = 0, amp_up = 128, amp_low = 128, ad_p = 0, fre_up = 0, fre_low = 0;
+  30          float adamp = 0.0, adfre = 0.0, fre_count = 0.0;
+  31          unsigned char xdata da_data[DA_LEN];
+  32          
+  33          unsigned char xdata sine[GEN_LEN] = {
+  34              128, 128, 129, 129, 130, 130, 131, 131, 132, 132, 133, 133, 134, 134, 134, 135, 135, 136, 136, 136,
+  35              137, 137, 138, 138, 138, 139, 139, 139, 140, 140, 140, 140, 141, 141, 141, 141, 142, 142, 142, 142,
+  36              142, 142, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 142,
+  37              142, 142, 142, 142, 142, 141, 141, 141, 141, 140, 140, 140, 140, 139, 139, 139, 138, 138, 138, 137,
+  38              137, 136, 136, 136, 135, 135, 134, 134, 134, 133, 133, 132, 132, 131, 131, 130, 130, 129, 129, 128,
+  39              128, 128, 127, 127, 126, 126, 125, 125, 124, 124, 123, 123, 122, 122, 122, 121, 121, 120, 120, 120,
+  40              119, 119, 118, 118, 118, 117, 117, 117, 116, 116, 116, 116, 115, 115, 115, 115, 114, 114, 114, 114,
+  41              114, 114, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 114,
+  42              114, 114, 114, 114, 114, 115, 115, 115, 115, 116, 116, 116, 116, 117, 117, 117, 118, 118, 118, 119,
+  43              119, 120, 120, 120, 121, 121, 122, 122, 122, 123, 123, 124, 124, 125, 125, 126, 126, 127, 127, 128};
+  44          unsigned char xdata saw[GEN_LEN] = {
+  45              115, 115, 115, 115, 116, 116, 116, 116, 116, 116, 116, 116, 117, 117, 117, 117, 117, 117, 117, 117,
+  46              118, 118, 118, 118, 118, 118, 118, 119, 119, 119, 119, 119, 119, 119, 119, 120, 120, 120, 120, 120,
+  47              120, 120, 120, 121, 121, 121, 121, 121, 121, 121, 122, 122, 122, 122, 122, 122, 122, 122, 123, 123,
+  48              123, 123, 123, 123, 123, 123, 124, 124, 124, 124, 124, 124, 124, 124, 125, 125, 125, 125, 125, 125,
+  49              125, 126, 126, 126, 126, 126, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 127, 128, 128, 128,
+  50              128, 128, 128, 128, 129, 129, 129, 129, 129, 129, 129, 129, 130, 130, 130, 130, 130, 130, 130, 130,
+  51              131, 131, 131, 131, 131, 131, 131, 132, 132, 132, 132, 132, 132, 132, 132, 133, 133, 133, 133, 133,
+  52              133, 133, 133, 134, 134, 134, 134, 134, 134, 134, 135, 135, 135, 135, 135, 135, 135, 135, 136, 136,
+  53              136, 136, 136, 136, 136, 136, 137, 137, 137, 137, 137, 137, 137, 137, 138, 138, 138, 138, 138, 138,
+  54              138, 139, 139, 139, 139, 139, 139, 139, 139, 140, 140, 140, 140, 140, 140, 140, 140, 141, 141, 141};
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 2   
+
+  55          unsigned char xdata rec[GEN_LEN] = {
+  56              115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 
+  57              115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 
+  58              115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 
+  59              115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 141, 141, 141, 
+  60              141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141,
+  61              141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141,
+  62              141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141,
+  63              141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141,
+  64              141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 141, 115, 115, 115, 
+  65              115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115};
+  66          unsigned char xdata tri[GEN_LEN] = {
+  67              115,115,115,115,116,116,116,116,116,116,117,117,117,117,117,117,117,118,118,118,
+  68              118,118,118,118,119,119,119,119,119,119,120,120,120,120,120,120,120,121,121,121,
+  69              121,121,121,121,122,122,122,122,122,122,123,123,123,123,123,123,123,124,124,124,
+  70              124,124,124,124,125,125,125,125,125,125,126,126,126,126,126,126,126,127,127,127,
+  71              127,127,127,127,128,128,128,128,128,128,129,129,129,129,129,129,129,130,130,130,
+  72              130,130,130,130,129,129,129,129,129,129,129,128,128,128,128,128,128,127,127,127,
+  73              127,127,127,127,126,126,126,126,126,126,126,125,125,125,125,125,125,124,124,124,
+  74              124,124,124,124,123,123,123,123,123,123,123,122,122,122,122,122,122,121,121,121,
+  75              121,121,121,121,120,120,120,120,120,120,120,119,119,119,119,119,119,118,118,118,
+  76              118,118,118,118,117,117,117,117,117,117,117,116,116,116,116,116,116,115,115,115};
+  77          sbit D_SER = P1 ^ 0;
+  78          sbit D_SRCLK = P1 ^ 1;
+  79          sbit D_RCLK = P1 ^ 2;
+  80          sbit KEY1 = P3 ^ 4;
+  81          sbit KEY2 = P3 ^ 5;
+  82          sbit Y = P1 ^ 4;
+  83          /*sfr P1ASF = 0x9D;
+  84          sfr ADC_CONTR = 0xBC;
+  85          sfr ADC_RES = 0xBD;
+  86          sfr AUXR1 = 0xA2;
+  87          sfr CLK_DIV = 0x97;      */
+  88          
+  89          //
+  90          void init_timer0(void) // 定时器初始化
+  91          {
+  92   1          TMOD &= 0XF0;
+  93   1          TMOD |= 0X02;
+  94   1          TL0 = 0X06;
+  95   1          TH0 = 0X06;
+  96   1          TR0 = 1;
+  97   1          ET0 = 1;
+  98   1      }
+  99          //
+ 100          void init_ad() // ad 寄存器初始化
+ 101          {
+ 102   1          P1ASF = 0x08;
+ 103   1          ADC_CONTR = 0xE3;
+ 104   1          AUXR1 &= 0xfb;
+ 105   1          CLK_DIV = 0x01;
+ 106   1      }
+ 107          //
+ 108          void init_special_interrupts(void) // 中断初始化
+ 109          {
+ 110   1          EX0 = 0;
+ 111   1          ET0 = 1;
+ 112   1          EX1 = 0;
+ 113   1          ET1 = 0;
+ 114   1          ES = 1;
+ 115   1          EA = 1;
+ 116   1          PT0 = 0;
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 3   
+
+ 117   1          PX1 = 1;
+ 118   1          PS = 0;
+ 119   1      }
+ 120          //
+ 121          void dsptask() // 数码管扫描
+ 122          {
+ 123   1          unsigned char i;
+ 124   1          unsigned char a, b;
+ 125   1      
+ 126   1          switch (sel)
+ 127   1          {
+ 128   2      
+ 129   2          case 0:
+ 130   2              a = 0x01;
+ 131   2              break;
+ 132   2          case 1:
+ 133   2              a = 0x02;
+ 134   2              break;
+ 135   2          case 2:
+ 136   2              a = 0x04;
+ 137   2              break;
+ 138   2          case 3:
+ 139   2              a = 0x08;
+ 140   2              break;
+ 141   2          default:
+ 142   2              a = 0x10;
+ 143   2              break;
+ 144   2          }
+ 145   1          for (b = 0x80, i = 0; i < 8; i++)
+ 146   1          {
+ 147   2              if (a & b)
+ 148   2                  D_SER = 1;
+ 149   2              else
+ 150   2                  D_SER = 0;
+ 151   2              D_SRCLK = 0;
+ 152   2              D_SRCLK = 1;
+ 153   2              D_SRCLK = 0;
+ 154   2              b = b >> 1;
+ 155   2              b = b & 0x7f;
+ 156   2          }
+ 157   1          if (sel < 4)
+ 158   1          {
+ 159   2              a = dspbuf[sel];
+ 160   2              key_num = sel;
+ 161   2          }
+ 162   1          else
+ 163   1          {
+ 164   2              switch (wave_flag)
+ 165   2              {
+ 166   3      
+ 167   3              case 1:
+ 168   3                  a = 0x07;
+ 169   3                  break;
+ 170   3              case 2:
+ 171   3                  a = 0x0B;
+ 172   3                  break;
+ 173   3              case 3:
+ 174   3                  a = 0x0D;
+ 175   3                  break;
+ 176   3              case 4:
+ 177   3                  a = 0x0E;
+ 178   3                  break;
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 4   
+
+ 179   3              default:
+ 180   3                  a = 0x10;
+ 181   3                  break;
+ 182   3              }
+ 183   2          }
+ 184   1          sel++;
+ 185   1          if (sel >= 5)
+ 186   1              sel = 0;
+ 187   1          for (b = 0x80, i = 0; i < 8; i++)
+ 188   1          {
+ 189   2              if (a & b)
+ 190   2                  D_SER = 1;
+ 191   2              else
+ 192   2                  D_SER = 0;
+ 193   2              D_SRCLK = 0;
+ 194   2              D_SRCLK = 1;
+ 195   2              D_SRCLK = 0;
+ 196   2              b = b >> 1;
+ 197   2              b = b & 0x7fff;
+ 198   2          }
+ 199   1          D_RCLK = 0;
+ 200   1          D_RCLK = 1;
+ 201   1          D_RCLK = 0;
+ 202   1      }
+ 203          //
+ 204          void key_service() // 按键扫描
+ 205          {
+ 206   1          if (key_sta & 0x01)
+ 207   1              return; // key_sta.0=1
+ 208   1              if(KEY2)
+ 209   1          {
+ 210   2              model[0] = key_num + 1;
+ 211   2              model[1] = 0;
+ 212   2              key_sta = key_sta | 0x01; // key_sta.0=1
+ 213   2          }
+ 214   1          else if(KEY1)
+ 215   1          {
+ 216   2              model[1] = key_num + 1;
+ 217   2              key_sta = key_sta | 0x01; // key_sta.0=1
+ 218   2          }
+ 219   1      
+ 220   1      }
+ 221          
+ 222          //
+ 223          void fdisp_num(int float_flag, int i, int n) // 数码管段码表
+ 224          {
+ 225   1          char c;
+ 226   1          switch (n)
+ 227   1          {
+ 228   2                  case 0:c = 0x11;break;
+ 229   2                  case 1:c = 0x7d;break;
+ 230   2                  case 2:c = 0x23;break;
+ 231   2                  case 3:c = 0x29;break;
+ 232   2                  case 4:c = 0x4d;break;
+ 233   2                  case 5:c = 0x89;break;
+ 234   2                  case 6:c = 0x81;break;
+ 235   2                  case 7:c = 0x3d;break;
+ 236   2                  case 8:c = 0x01;break;
+ 237   2                  case 9:c = 0x09;break;
+ 238   2                  default:c = 0xff;
+ 239   2          }
+ 240   1          if (float_flag == 1)
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 5   
+
+ 241   1          {
+ 242   2              c = c & 0xFE;
+ 243   2          }
+ 244   1          dspbuf[i] = c;
+ 245   1      }
+ 246          
+ 247          //
+ 248          void ad_get() // ad 采样
+ 249          {
+ 250   1          int i = 0;
+ 251   1          Y = !Y; // P1.4 翻转检测采样频率
+ 252   1          ADC_RES = 0;
+ 253   1          ADC_CONTR |= 0x08;
+ 254   1          for (i = 0; i < 4; i++)
+ 255   1          {
+ 256   2              _nop_();
+ 257   2          }
+ 258   1          while (ADC_CONTR & 0x10 == 0);
+ 259   1          ADC_CONTR &= 0xE7;
+ 260   1          adresult = ADC_RES; // 存储采样值
+ 261   1      }
+ 262          //
+ 263          void ad_save() // ad 采样值存储
+ 264          {
+ 265   1          da_data[da_p] = adresult;
+ 266   1          da_p++;
+ 267   1          if (da_p >= DA_LEN)
+ 268   1          {
+ 269   2              da_p = 0;
+ 270   2          }
+ 271   1      }
+ 272          //
+ 273          void da_display(int da_type) // da 转换输出
+ 274          {
+ 275   1          DA_CH1 = adresult; // 实时显示
+ 276   1          if (da_type)       // 波形回放
+ 277   1          {
+ 278   2              DA_CH2 = da_data[daplayback_p];
+ 279   2              daplayback_p++;
+ 280   2              if (daplayback_p >= DA_LEN)
+ 281   2              {
+ 282   3                  daplayback_p = 0;
+ 283   3              }
+ 284   2          }
+ 285   1      }
+ 286          //1
+ 287          void da_generator(int wave, int amp, int fre) // da 波形发生
+ 288          {
+ 289   1          int da_result;
+ 290   1          wave_flag = wave;
+ 291   1          wave_amp = amp;
+ 292   1          wave_fre = fre;
+ 293   1          switch (wave_flag)
+ 294   1      
+ 295   1          {
+ 296   2          case 1: // 正弦波
+ 297   2              da_result = sine[dag_p];
+ 298   2              break;
+ 299   2          case 2: // 三角波
+ 300   2              da_result = tri[dag_p];
+ 301   2              break;
+ 302   2          case 3: // 方波
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 6   
+
+ 303   2              da_result = rec[dag_p];
+ 304   2              break;
+ 305   2          case 4: // 锯齿波
+ 306   2              da_result = saw[dag_p];
+ 307   2              break;
+ 308   2          default:
+ 309   2              break;
+ 310   2          }                  
+ 311   1              if (fre!=0){dag_p=dag_p+fre+2;}else{dag_p=dag_p+2;}             // 调频
+ 312   1              if (amp!=0){da_result=(int)((da_result-128)*amp/2+128);}// 调幅
+ 313   1          DAC_1 = da_result; // 输出波形
+ 314   1          if (dag_p >= GEN_LEN){dag_p = 0;}
+ 315   1      }
+ 316          //
+ 317          void fdisp_float(float n) // 数码管显示
+ 318          {
+ 319   1          int i, order, n_int;
+ 320   1          unsigned int s;
+ 321   1          order = (int)log10(n);
+ 322   1          if (order > 0)
+ 323   1          {
+ 324   2              i = 3;
+ 325   2              n_int = (int)(n);
+ 326   2              for (i = 3; i >= 0; i--)
+ 327   2              {
+ 328   3                  s = n_int % 10;
+ 329   3                  fdisp_num(0, i, s);
+ 330   3                  n_int = n_int / 10;
+ 331   3              }
+ 332   2          }
+ 333   1          else
+ 334   1          {
+ 335   2              if (n < 0)
+ 336   2              {
+ 337   3                  dspbuf[0] = 0xef;
+ 338   3                  n = -1 * n;
+ 339   3              }
+ 340   2              else
+ 341   2              {
+ 342   3                  dspbuf[0] = 0xff;
+ 343   3              }
+ 344   2              for (i = 1; i < 4; i++)
+ 345   2              {
+ 346   3                  s = (int)n;
+ 347   3                  if (i == 1)
+ 348   3                  {
+ 349   4                      fdisp_num(1, i, s);
+ 350   4                  }
+ 351   3      
+ 352   3                  else
+ 353   3                  {
+ 354   4                      fdisp_num(0, i, s);
+ 355   4                  }
+ 356   3                  n = (n - s) * 10;
+ 357   3              }
+ 358   2          }
+ 359   1      }
+ 360          //
+ 361          void amp_measure() // 幅值测量
+ 362          {
+ 363   1          int i = 0;
+ 364   1          amp = adresult;
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 7   
+
+ 365   1          ad_p++;
+ 366   1          if (amp > amp_up)
+ 367   1          {
+ 368   2              amp_up = amp;
+ 369   2          }
+ 370   1          if (amp < amp_low)
+ 371   1          {
+ 372   2              amp_low = amp;
+ 373   2          }
+ 374   1          if (ad_p >= AD_LEN)
+ 375   1          {
+ 376   2              adamp = (amp_up * 5.0 - amp_low * 5.0) / 256;
+ 377   2              ad_p = 0;
+ 378   2              amp_up = amp_low = 128;
+ 379   2          }
+ 380   1      
+ 381   1          fdisp_float(adamp);
+ 382   1      }
+ 383          
+ 384          //
+ 385          void fre_measure() // 频率测量
+ 386          {
+ 387   1          int i = 0;
+ 388   1          amp = adresult;
+ 389   1          ad_p++;
+ 390   1          if (amp > 128 && ampl <= 128)
+ 391   1          {
+ 392   2              fre_up = ad_p;
+ 393   2              if (fre_low != 0)
+ 394   2              {
+ 395   3                  fre = fre + fabs(fre_low - fre_up);
+ 396   3                  fre_count++;
+ 397   3              }
+ 398   2              fre_low = fre_up;
+ 399   2          }
+ 400   1      
+ 401   1          if (ad_p >= AD_LEN)
+ 402   1          {
+ 403   2              adfre = 500.0 / (fre * 1.0 / fre_count);
+ 404   2              // adfre+=adfre*0.05;
+ 405   2              fre = 0;
+ 406   2              ad_p = 0;
+ 407   2              fre_up = fre_low = 0;
+ 408   2              fre_count = 0;
+ 409   2              amp = ampl = 129;
+ 410   2          }
+ 411   1          ampl = amp;
+ 412   1          fdisp_float(adfre);
+ 413   1      }
+ 414          //
+ 415          void clear() // 清零
+ 416          {
+ 417   1          int ram_p;
+ 418   1          EA = 0;
+ 419   1          for (ram_p = 0; ram_p < da_p; ram_p++)
+ 420   1          {
+ 421   2              XBYTE[ram_p] = 0;
+ 422   2          }
+ 423   1          fdisp_float(0000);
+ 424   1          da_p = 0;
+ 425   1          clearflag = 0;
+ 426   1          EA = 1;
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 8   
+
+ 427   1      }
+ 428          
+ 429          //
+ 430          void model2() // 回放&测量模式
+ 431          {
+ 432   1          switch (model[1])
+ 433   1          {
+ 434   2                  case 2:amp_measure();break;
+ 435   2                  case 3:fre_measure();break;
+ 436   2                  case 4:clearflag = 1;break;
+ 437   2                  default:break;
+ 438   2          }
+ 439   1      }
+ 440          //
+ 441          void model_select() // 模式选择
+ 442          {
+ 443   1      
+ 444   1          switch (model[0])
+ 445   1          {
+ 446   2      
+ 447   2          case 1: // model1 波形发生
+ 448   2              adcount++;
+ 449   2              if (adcount == 1)
+ 450   2              {
+ 451   3                  da_display(0);
+ 452   3                  adcount = 0;
+ 453   3              }
+ 454   2              wave_flag = model[1];
+ 455   2              wave_amp = 0;
+ 456   2              wave_fre = 0;
+ 457   2      
+ 458   2              break;
+ 459   2          case 2:// model2 回放测量
+ 460   2              model2();
+ 461   2              break;
+ 462   2          case 3:// 调频
+ 463   2              adcount++;
+ 464   2              if (adcount == 1)
+ 465   2              {
+ 466   3                  da_display(0);
+ 467   3                  adcount = 0;
+ 468   3              }
+ 469   2              wave_amp = model[1];
+ 470   2              break;
+ 471   2          case 4: // 调幅
+ 472   2              adcount++;
+ 473   2              if (adcount == 1)
+ 474   2              {
+ 475   3                  da_display(0);
+ 476   3                  adcount = 0;
+ 477   3              }
+ 478   2              wave_fre = model[1];
+ 479   2              break;
+ 480   2          default:break;
+ 481   2          }
+ 482   1      }
+ 483          //
+ 484          void timer_isr() interrupt 1 // 定时器中断处理
+ 485          {
+ 486   1      
+ 487   1          ad_get();
+ 488   1          if (model[0] != 2)
+C51 COMPILER V9.01   TESTMAIN                                                              04/27/2023 14:21:23 PAGE 9   
+
+ 489   1          {
+ 490   2              ad_save();
+ 491   2              da_generator(wave_flag, wave_amp, wave_fre);
+ 492   2              da_display(0);
+ 493   2          }
+ 494   1          else
+ 495   1          {
+ 496   2              da_display(1);
+ 497   2          }
+ 498   1      }
+ 499          void main(void) //主函数
+ 500          {
+ 501   1      
+ 502   1          init_timer0();             // 定时器初始化
+ 503   1          init_special_interrupts(); // 中断设置初始化
+ 504   1              init_ad();              //ad 寄存器初始化
+ 505   1          for (;;)
+ 506   1          {
+ 507   2              dspcount++;
+ 508   2              if (dspcount == 3) // 数码管与按键
+ 509   2              {
+ 510   3                  dspcount = 0;
+ 511   3                  dsptask();
+ 512   3                  key_service();
+ 513   3              }
+ 514   2      
+ 515   2              model_select();
+ 516   2              if (key_sta & 0x01) // key_sta.0==1 数码管显示
+ 517   2              {
+ 518   3                  fdisp_num(0, 0, 10);
+ 519   3                  fdisp_num(0, 1, 10);
+ 520   3                  fdisp_num(0, 2, model[0]);
+ 521   3                  fdisp_num(0, 3, model[1]);
+ 522   3                  key_sta = key_sta & 0xfe; // key_sta.0=0
+ 523   3              }
+ 524   2              if (clearflag)
+ 525   2              {
+ 526   3                  clear();
+ 527   3              }
+ 528   2          }
+ 529   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1779    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   7800    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     61      22
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

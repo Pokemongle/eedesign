@@ -1,0 +1,175 @@
+C51 COMPILER V9.01   DEMO4                                                                 03/16/2023 15:40:48 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE DEMO4
+OBJECT MODULE PLACED IN demo4.OBJ
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE demo4.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg51.h>                              // special function register declarations
+   2          #include<absacc.h>
+   3          
+   4          #define  DAC_1    XBYTE[0x2000]
+   5          #define  DAC_2    XBYTE[0x4000]
+   6          
+   7          #define  ADC_0    XBYTE[0x6000]
+   8          #define  ADC_1    XBYTE[0x6001]
+   9          #define  ADC_2    XBYTE[0x6002]
+  10          #define  ADC_3    XBYTE[0x6003]
+  11          #define  ADC_4    XBYTE[0x6004]
+  12          #define  ADC_5    XBYTE[0x6005]
+  13          #define  ADC_6    XBYTE[0x6006]
+  14          #define  ADC_7    XBYTE[0x6007]
+  15          
+  16          #define  LEN        10
+  17          
+  18          void init_timer0();
+  19          void init_special_interrupts();
+  20          
+  21          unsigned char        buff[LEN];
+  22          unsigned char        p_read=0,p_write=0,ad_temp;
+  23          unsigned char        dspbuf[4]={0xfe,0xfe,0xfe,0xfe},sel=0;
+  24          unsigned int         clocktime=0,adcount=0;
+  25          
+  26          sbit D_SER     = P1^0;
+  27          sbit D_SRCLK   = P1^1;
+  28          sbit D_RCLK    = P1^2;
+  29          sbit KEY1      = P3^4;
+  30          sbit KEY2      = P3^5;
+  31          //---------------------------------------------------------------------------------------
+  32          void init_timer0(void)              //  定时器0初始
+  33            {
+  34   1        TMOD &= 0XF0;
+  35   1        TMOD |= 0X02;
+  36   1        TL0 = 0X06;
+  37   1        TH0 = 0X06;
+  38   1        TR0 = 1;
+  39   1        ET0 = 1;
+  40   1        }
+  41          //---------------------------------------------------------------------------------------
+  42          void init_special_interrupts(void)   //  中断设置
+  43            {
+  44   1        EX0 = 0;
+  45   1        ET0 = 1;
+  46   1        EX1 = 0;
+  47   1        ET1 = 0;
+  48   1        ES  = 1;
+  49   1        EA  = 1;
+  50   1        PT0 = 0;
+  51   1        PX1 = 1;
+  52   1        PS  = 0;
+  53   1        }
+  54          //---------------------------------------------------------------------------------------
+  55          void dsptask()
+C51 COMPILER V9.01   DEMO4                                                                 03/16/2023 15:40:48 PAGE 2   
+
+  56            {
+  57   1        unsigned char i;
+  58   1        unsigned char a,b;
+  59   1      
+  60   1        switch(sel)
+  61   1         {
+  62   2         case 0:  a=0x01;  break;
+  63   2         case 1:  a=0x02;  break;
+  64   2         case 2:  a=0x04;  break;
+  65   2         default: a=0x08;
+  66   2         }
+  67   1       for(b=0x80,i=0;i<8;i++)
+  68   1          {
+  69   2          if(a&b)  D_SER=1;
+  70   2          else     D_SER=0;
+  71   2          D_SRCLK=0;
+  72   2          D_SRCLK=1;
+  73   2          D_SRCLK=0;
+  74   2          b=b>>1;  b=b&0x7f;
+  75   2          }
+  76   1        a=dspbuf[sel];
+  77   1        sel++;
+  78   1        if(sel>=4) sel=0;
+  79   1        for(b=0x80,i=0;i<8;i++)
+  80   1          {
+  81   2          if(a&b)  D_SER=1;
+  82   2          else     D_SER=0;
+  83   2          D_SRCLK=0;
+  84   2          D_SRCLK=1;
+  85   2          D_SRCLK=0;
+  86   2          b=b>>1;  b=b&0x7fff;
+  87   2          }
+  88   1        D_RCLK=0;
+  89   1        D_RCLK=1;
+  90   1        D_RCLK=0;
+  91   1        }
+  92          //---------------------------------------------------------------------------------------
+  93          void timer_isr() interrupt 1           //定时器0中断处理
+  94            {
+  95   1        unsigned char  t;
+  96   1        EA=0;
+  97   1        adcount++;
+  98   1        if(adcount==20)                      // 1/4*20 = 5ms
+  99   1          {
+ 100   2          buff[p_write]=ADC_0;               // A/D读入
+ 101   2          ADC_0=0;                           // restart A/D
+ 102   2          p_write++;
+ 103   2          if(p_write==LEN)  p_write=0;
+ 104   2          dsptask();
+ 105   2          clocktime++;
+ 106   2          adcount=0;
+ 107   2          }
+ 108   1        EA=1;
+ 109   1        }
+*** WARNING C280 IN LINE 95 OF DEMO4.C: 't': unreferenced local variable
+ 110          //---------------------------------------------------------------------------------------
+ 111          fdisp(unsigned char n,unsigned char m)
+ 112            {
+ 113   1        char  c;
+ 114   1         switch(n)
+ 115   1          {
+ 116   2          case 0:  c=0x11;  break;
+C51 COMPILER V9.01   DEMO4                                                                 03/16/2023 15:40:48 PAGE 3   
+
+ 117   2          case 1:  c=0x7d;  break;
+ 118   2          case 2:  c=0x23;  break;
+ 119   2          case 3:  c=0x29;  break;
+ 120   2          case 4:  c=0x4d;  break;
+ 121   2          case 5:  c=0x89;  break;
+ 122   2          case 6:  c=0x81;  break;
+ 123   2          case 7:  c=0x3d;  break;
+ 124   2          case 8:  c=0x01;  break;
+ 125   2          default: c=0x09; 
+ 126   2          }
+ 127   1         dspbuf[m]=c;
+ 128   1        }
+ 129          //---------------------------------------------------------------------------------------
+ 130          void main(void)                    // 主函数
+ 131            {
+ 132   1      unsigned char t;
+ 133   1        init_timer0();                  //初始化定时器0
+ 134   1        init_special_interrupts();      //设置中断
+ 135   1        for(;;)
+ 136   1          { 
+ 137   2              if(p_read!=p_write)
+ 138   2                 {
+ 139   3              DAC_1=buff[p_read];       // D/A输出
+ 140   3                  p_read++;
+ 141   3                  if(p_read==LEN)  p_read=0;
+ 142   3              }
+ 143   2              }
+ 144   1        }
+*** WARNING C280 IN LINE 132 OF DEMO4.C: 't': unreferenced local variable
+ 145          //----------------------------------End---------------------------------------------------
+*** WARNING C290 IN LINE 128 OF DEMO4.C: missing return value
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    361    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     22       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)
