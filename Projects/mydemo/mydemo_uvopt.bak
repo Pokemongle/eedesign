@@ -190,55 +190,20 @@
     <File>
       <GroupNumber>1</GroupNumber>
       <FileNumber>2</FileNumber>
-      <FileType>5</FileType>
+      <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\STC12C5A.h</PathWithFileName>
-      <FilenameWithoutPath>STC12C5A.h</FilenameWithoutPath>
-    </File>
-    <File>
-      <GroupNumber>1</GroupNumber>
-      <FileNumber>3</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>1</tvExp>
-      <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>29</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <CurrentLine>12</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\test1.c</PathWithFileName>
       <FilenameWithoutPath>test1.c</FilenameWithoutPath>
     </File>
-  </Group>
-
-  <Group>
-    <GroupName>App</GroupName>
-    <tvExp>1</tvExp>
-    <tvExpOptDlg>0</tvExpOptDlg>
-    <cbSel>0</cbSel>
     <File>
-      <GroupNumber>2</GroupNumber>
-      <FileNumber>4</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>2</CurrentLine>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\App\adda\adda.c</PathWithFileName>
-      <FilenameWithoutPath>adda.c</FilenameWithoutPath>
-    </File>
-    <File>
-      <GroupNumber>2</GroupNumber>
-      <FileNumber>5</FileNumber>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>0</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -247,8 +212,8 @@
       <TopLine>0</TopLine>
       <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\App\adda\adda.h</PathWithFileName>
-      <FilenameWithoutPath>adda.h</FilenameWithoutPath>
+      <PathWithFileName>.\STC12C5A.h</PathWithFileName>
+      <FilenameWithoutPath>STC12C5A.h</FilenameWithoutPath>
     </File>
   </Group>
 
@@ -1597,9 +1562,9 @@
       <Documents>
         <Doc>
           <Name>.\test1.c</Name>
-          <ColumnNumber>0</ColumnNumber>
+          <ColumnNumber>29</ColumnNumber>
           <TopLine>1</TopLine>
-          <CurrentLine>1</CurrentLine>
+          <CurrentLine>12</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

@@ -1,8 +1,8 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        04/27/2023  15:52:16  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        05/11/2023  13:58:17  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
-D:\\C51\BIN\BL51.EXE STARTUP.obj, test1.obj, .\adda.obj TO mydemo
+D:\\C51\BIN\BL51.EXE STARTUP.obj, test1.obj TO mydemo
 
 
 MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
@@ -11,7 +11,6 @@ MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
 INPUT MODULES INCLUDED:
   STARTUP.obj (?C_STARTUP)
   test1.obj (TEST1)
-  .\adda.obj (ADDA)
   D:\\C51\LIB\C51FPS.LIB (?C?FPADD)
   D:\\C51\LIB\C51FPS.LIB (?C?FPMUL)
   D:\\C51\LIB\C51FPS.LIB (?C?FPDIV)
@@ -59,10 +58,10 @@ LINK MAP OF MODULE:  mydemo (?C_STARTUP)
             CODE    09BFH     00D8H     UNIT         ?PR?INTERRUPT_TIMER0?TEST1
             CODE    0A97H     00CFH     UNIT         ?PR?DA_GENERATOR?TEST1
             CODE    0B66H     009CH     UNIT         ?C_INITSEG
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 2
-
-
             CODE    0C02H     008CH     UNIT         ?C_C51STARTUP
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 2
+
+
             CODE    0C8EH     006FH     UNIT         ?PR?DSPTASK?TEST1
             CODE    0CFDH     0064H     UNIT         ?PR?DA_PROCESS?TEST1
             CODE    0D61H     005CH     UNIT         ?PR?_FDISP?TEST1
@@ -119,8 +118,8 @@ SEGMENT                                      BIT_GROUP          DATA_GROUP
   +--> ?PR?_FABS?FABS
 
 ?PR?DSPBUF_MEASURE?TEST1                  -----    -----      0008H    0004H
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 3
 
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 3
 
 
 
@@ -179,10 +178,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   D:0026H         PUBLIC        angle
   C:0616H         PUBLIC        mode_select
   D:00A8H         PUBLIC        IE
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 4
-
-
   B:0090H.0       PUBLIC        D_SER
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 4
+
+
   D:00BDH         PUBLIC        ADC_RES
   B:00A8H.4       PUBLIC        ES
   C:0D61H         PUBLIC        _fdisp
@@ -239,10 +238,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   D:0048H         PUBLIC        da_count
   D:004AH         PUBLIC        ad_count
   B:00B8H.1       PUBLIC        PT0
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 5
-
-
   X:0000H         PUBLIC        ad_memo
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 5
+
+
   B:0088H.4       PUBLIC        TR0
   C:0E11H         PUBLIC        ad_save
   B:00B8H.2       PUBLIC        PX1
@@ -299,10 +298,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:0A28H         LINE#         185
   C:0A28H         LINE#         186
   C:0A2AH         LINE#         187
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 6
-
-
   C:0A2FH         LINE#         189
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 6
+
+
   C:0A32H         LINE#         202
   C:0A35H         LINE#         203
   C:0A53H         LINE#         204
@@ -359,10 +358,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:0A9DH         LINE#         253
   C:0AB6H         LINE#         254
   C:0AB6H         LINE#         255
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 7
-
-
   C:0ABEH         LINE#         256
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 7
+
+
   C:0AC7H         LINE#         257
   C:0ACCH         LINE#         258
   C:0ACCH         LINE#         259
@@ -419,10 +418,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:077EH         LINE#         302
   C:0782H         LINE#         303
   C:0787H         LINE#         304
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 8
-
-
   C:078BH         LINE#         305
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 8
+
+
   C:079AH         LINE#         306
   C:07A8H         LINE#         307
   C:07C1H         LINE#         308
@@ -479,10 +478,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:0616H         LINE#         412
   C:0647H         LINE#         413
   C:0647H         LINE#         414
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 9
-
-
   C:064AH         LINE#         415
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 9
+
+
   C:064EH         LINE#         416
   C:064EH         LINE#         417
   C:064EH         LINE#         418
@@ -539,10 +538,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:06F6H         LINE#         478
   C:06FFH         LINE#         486
   C:0703H         LINE#         487
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 10
-
-
   C:0709H         LINE#         488
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 10
+
+
   C:0709H         LINE#         489
   C:070DH         LINE#         490
   C:0713H         LINE#         491
@@ -599,10 +598,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:0E3EH         LINE#         591
   C:0E41H         LINE#         592
   C:0E47H         LINE#         593
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 11
-
-
   C:0E4AH         LINE#         594
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 11
+
+
   C:0E4AH         LINE#         596
   -------         ENDPROC       KEY_SERVICE
   -------         PROC          AD_SAVE
@@ -659,10 +658,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   C:0CE6H         LINE#         676
   C:0CE8H         LINE#         677
   C:0CEAH         LINE#         678
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 12
-
-
   C:0CECH         LINE#         679
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 12
+
+
   C:0CEEH         LINE#         680
   C:0CF2H         LINE#         682
   C:0CF6H         LINE#         683
@@ -719,10 +718,10 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   -------         PROC          INIT_SPECIAL_INTERRUPTS
   C:0E61H         LINE#         729
   C:0E61H         LINE#         730
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 13
-
-
   C:0E61H         LINE#         731
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 13
+
+
   C:0E63H         LINE#         732
   C:0E65H         LINE#         733
   C:0E67H         LINE#         734
@@ -746,23 +745,6 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   -------         ENDPROC       INIT_TIMER0
   -------         ENDMOD        TEST1
 
-  -------         MODULE        ADDA
-  C:0000H         SYMBOL        _ICE_DUMMY_
-  D:0080H         PUBLIC        P0
-  D:0090H         PUBLIC        P1
-  D:00A0H         PUBLIC        P2
-  D:00B0H         PUBLIC        P3
-  D:00C0H         PUBLIC        P4
-  D:00C8H         PUBLIC        P5
-  D:00A8H         PUBLIC        IE
-  D:00B8H         PUBLIC        IP
-  D:00D8H         PUBLIC        CCON
-  D:0098H         PUBLIC        SCON
-  D:0088H         PUBLIC        TCON
-  D:00E0H         PUBLIC        ACC
-  D:00D0H         PUBLIC        PSW
-  -------         ENDMOD        ADDA
-
   -------         MODULE        ?C?FPADD
   C:0015H         PUBLIC        ?C?FPADD
   C:0011H         PUBLIC        ?C?FPSUB
@@ -779,9 +761,6 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
   -------         MODULE        ?C?FPCMP
   C:02AEH         PUBLIC        ?C?FPCMP
   C:02ACH         PUBLIC        ?C?FPCMP3
-BL51 BANKED LINKER/LOCATER V6.22                                                      04/27/2023  15:52:16  PAGE 14
-
-
   -------         ENDMOD        ?C?FPCMP
 
   -------         MODULE        ?C?FCAST
@@ -800,6 +779,9 @@ SYMBOL TABLE OF MODULE:  mydemo (?C_STARTUP)
 
   -------         MODULE        SIN
   C:04F0H         PUBLIC        _COS
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/11/2023  13:58:17  PAGE 14
+
+
   C:0506H         PUBLIC        _SIN
   C:0538H         PUBLIC        _TAN
   -------         ENDMOD        SIN

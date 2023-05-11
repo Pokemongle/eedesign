@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 1   
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE TEST1
@@ -9,7 +9,6 @@ line level    source
 
    1          //==========头文件=========
    2          #include <STC12C5A.h>
-*** WARNING C318 IN LINE 2 OF test1.c: can't open file 'STC12C5A.h'
    3          #include <absacc.h>
    4          #include <intrins.h>
    5          #include <math.h>
@@ -31,16 +30,11 @@ line level    source
   21          //============管脚定义================
   22          //---------数码管连接芯片74CH565
   23          sbit D_SER = P1 ^ 0;
-*** ERROR C202 IN LINE 23 OF TEST1.C: 'P1': undefined identifier
   24          sbit D_SRCLK = P1 ^ 1;
-*** ERROR C202 IN LINE 24 OF TEST1.C: 'P1': undefined identifier
   25          sbit D_RCLK = P1 ^ 2;
-*** ERROR C202 IN LINE 25 OF TEST1.C: 'P1': undefined identifier
   26          //---------键盘行扫描
   27          sbit KEY1 = P3 ^ 5;
-*** ERROR C202 IN LINE 27 OF TEST1.C: 'P3': undefined identifier
   28          sbit KEY2 = P3 ^ 4;
-*** ERROR C202 IN LINE 28 OF TEST1.C: 'P3': undefined identifier
   29          //===================================
   30          
   31          //============函数声明===============
@@ -62,14 +56,14 @@ line level    source
   47          void init_special_interrupts(); // 中断初始化
   48          //void key_scan();                              // 按键扫描
   49          void key_service();                             // 按键扫描
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 2   
-
   50          void mode_select();                         // 模式选择，修改对应数码管缓存区
   51          //void memo_increment();                        // 存储读取位置更改 
   52          //--模式1：波形实时显示模式
   53          //---------CH1: 采样实时输出，同时存储输入
   54          //---------CH2: 信号发生器      正弦波|三角波|方波|锯齿波                                               
   55          //--模式2：波形回放显示模式                                                                                                                     
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 2   
+
   56          //---------CH1: 采样实时输出
   57          //---------CH2：输出模式1中存储的信号的波形                                                                                                                             
   58          //--模式3：测量模式
@@ -126,14 +120,14 @@ line level    source
  109                  dag_p = 0,         // 信号发生器指针
  110                  da_result = 0, // 信号发生器单次产生的数字信号
  111                  flag_amp = 0,  // 数码管显示幅值
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 3   
-
  112                  flag_fre = 0,  // 数码管显示频率标志
  113                  key_col = 0,   // 按键扫描当前列
  114                  key_num = 0,   // 按键序号
  115                  memo_p = 0,        // A/D采集存储区指针
  116                  mode = 0,          // 模式选择
  117                  review_p = 0,  // D/A回放显示指针
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 3   
+
  118                  rec_count = 0, // 方波信号发生计数
  119                  saw_value = 64,// 锯齿波信号
  120                  rec_value = 64,// 方波信号
@@ -186,12 +180,9 @@ line level    source
  167          void interrupt_timer0() interrupt 1 // 定时器0中断处理
  168          {
  169   1              EA = 0;
-*** ERROR C202 IN LINE 169 OF TEST1.C: 'EA': undefined identifier
  170   1              ad_result = GetADC();// 单次采样                
  171   1      
  172   1              if(mode == 1){          // CH1：实时采样并存储 CH2: 信号发生器
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 4   
-
  173   2                      // 信号发生
  174   2                      da_count++;
  175   2                      if(da_count >= gen_count){ // gen_count = 4时，每隔1ms输出一次D/A
@@ -199,6 +190,8 @@ line level    source
  177   3                              da_generator();
  178   3                              da_process();   // 显示值预处理
  179   3                      }
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 4   
+
  180   2                      // 模式1对实时采样值进行存储
  181   2                      ad_result = ((int)(ad_result / 2.0 + 64));
  182   2                      ad_save();
@@ -239,7 +232,6 @@ line level    source
  217   1              //ad_result = ((int)(ad_result / 2.0 + 64)); // 输出预处理
  218   1          da_display();       // D/A显示
  219   1              EA = 1;
-*** ERROR C202 IN LINE 219 OF TEST1.C: 'EA': undefined identifier
  220   1      }
  221          void da_process(){      // 处理待显示的D/A输出值
  222   1              da_result = (int)(da_result * 1.0f / da_index + 128.0f -128.0f / da_index); 
@@ -254,8 +246,6 @@ line level    source
  231   3                              DA_CH2 = da_result; // 信号发生器
  232   3                      };break;
  233   2                      case 2:{         // 模式2 CH1实时显示 CH2回放显示
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 5   
-
  234   3                              DA_CH1 = ad_result;// 实时显示
  235   3                              DA_CH2 = ad_memo[review_p++]; // 回放显示
  236   3                              if (review_p >= MEMO_LEN){ // 若显示指针到达存储区末尾，从头开始显示
@@ -264,6 +254,8 @@ line level    source
  239   3                      };break;
  240   2                      case 3:{        // 模式3 测量模式
  241   3                              DA_CH1 = ad_result;// 实时测量 
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 5   
+
  242   3                              DA_CH2 = 128; 
  243   3                      };break;
  244   2                      case 4:{        // 模式4 信号发生器调频、调幅
@@ -318,8 +310,6 @@ line level    source
  293   3                              da_result = saw_value;
  294   3                      };break;
  295   2                      default:da_result = 128;break;  
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 6   
-
  296   2              }
  297   1      }
  298          
@@ -328,6 +318,8 @@ line level    source
  301   1              // 频率值转换为数码管显示
  302   1              if(flag_fre){
  303   2                      unsigned int integer_fre = 0;
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 6   
+
  304   2                      unsigned int fraction_fre = 0;
  305   2                      integer_fre = (int)fre_es;
  306   2                      dspbuf[3] = dspchar[integer_fre % 10];
@@ -382,8 +374,6 @@ line level    source
  355   1                      ad_max = ad_result; // 更新测量最大值
  356   1                      time_count = 1;         // 测量时间计数重新计数
  357   1                      fre_count = 1;          // 最大值采样次数重新计数为1，即当前值
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 7   
-
  358   1              }
  359   1              else if(ad_result >= ad_max - WIN_SIZE / 2){// 测量值在窗口内
  360   1                      fre_count++;    // 最大值采样技术加1
@@ -392,6 +382,8 @@ line level    source
  363   1                      ad_min = ad_result; //  更新测量最小值
  364   1              }
  365   1              */
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 7   
+
  366   1              // 频率测量
  367   1              amp_p2 = ad_result;
  368   1              time_count++;
@@ -446,8 +438,6 @@ line level    source
  417   3                              fdisp(0,2);
  418   3                              fdisp(wave_sel,3);
  419   3                      };break;
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 8   
-
  420   2                      case 2:{                // 模式2：实时采样，波形回放
  421   3                              mode = 2;
  422   3                              fdisp(2,0);     // 数码管最左端显示模式2
@@ -456,6 +446,8 @@ line level    source
  425   3                              fdisp(0,3);     // 数码管最右端波形显示清零     
  426   3                      };break;
  427   2                      case 3:{                // 模式3：测量实时采样的幅值和频率（或周期）
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 8   
+
  428   3                              mode = 3;
  429   3                              fdisp(3,0);
  430   3                              fdisp(0,1);
@@ -510,8 +502,6 @@ line level    source
  479   4                                      /*
  480   4                                      if(gen_count <= 4){
  481   4                                              gen_count = 4;
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 9   
-
  482   4                                      }else{
  483   4                                              gen_count--;
  484   4                                      }
@@ -520,6 +510,8 @@ line level    source
  487   5                                              gen_count = 3;
  488   5                                      }
  489   4                                      if(amp_modi){
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 9   
+
  490   5                                              da_index = 3;
  491   5                                      }
  492   4                              }       
@@ -574,8 +566,6 @@ line level    source
  541   4                                      if(amp_modi){
  542   5                                              da_index = 5;
  543   5                                      }
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 10  
-
  544   4                              }
  545   3                      }; break;
  546   2                      default:break;
@@ -584,6 +574,8 @@ line level    source
  549   1      }
  550          /*
  551          unsigned char amp = 128;
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 10  
+
  552          unsigned char amp_up = 128, amp_low =128;
  553          float adamp = 0.0f;
  554          unsigned int num = 0;
@@ -620,12 +612,10 @@ line level    source
  585   1              if(key_sta & 0x01) return;//key_sta.0 = 1，按键为按下状态
  586   1              // key_sta.0 = 0，按键为弹起状态，检测到KEY1/KEY2行有按键被按下
  587   1              if(KEY1){
-*** ERROR C202 IN LINE 587 OF TEST1.C: 'KEY1': undefined identifier
  588   2                      key_num = key_col + 1; 
  589   2                      key_sta = key_sta | 0x01;//key_sta.0 = 1
  590   2              }       
  591   1              else if(KEY2){
-*** ERROR C202 IN LINE 591 OF TEST1.C: 'KEY2': undefined identifier
  592   2                      key_num = key_col + 5;
  593   2                      key_sta = key_sta | 0x01;//key_sta.0 = 1        
  594   2              }
@@ -638,8 +628,6 @@ line level    source
  601              _nop_();
  602              _nop_();
  603              _nop_();
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 11  
-
  604          }
  605          */
  606          /*
@@ -650,6 +638,8 @@ line level    source
  611              ad_delay();        // 必要的4个nop
  612              while (ADC_CONTR & 0x10 == 0)
  613                  ;                // ADC_FLAG = 0,等待ADC_FLAG = 1
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 11  
+
  614              ADC_CONTR &= 0xE7;   // 上述两位清零等待下次采样
  615              ad_result = ADC_RES; // 保存采样值
  616          }
@@ -690,20 +680,13 @@ line level    source
  651   1          {
  652   2              if (a & b)
  653   2                  D_SER = 1;
-*** ERROR C202 IN LINE 653 OF TEST1.C: 'D_SER': undefined identifier
  654   2              else
  655   2                  D_SER = 0;
-*** ERROR C202 IN LINE 655 OF TEST1.C: 'D_SER': undefined identifier
  656   2              D_SRCLK = 0;
-*** ERROR C202 IN LINE 656 OF TEST1.C: 'D_SRCLK': undefined identifier
  657   2              D_SRCLK = 1;
-*** ERROR C202 IN LINE 657 OF TEST1.C: 'D_SRCLK': undefined identifier
  658   2              D_SRCLK = 0;
-*** ERROR C202 IN LINE 658 OF TEST1.C: 'D_SRCLK': undefined identifier
  659   2              b = b >> 1;
  660   2              // b=b&0x7f;
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 12  
-
  661   2          }
  662   1          // 载入位选数码管对应的显示内容
  663   1          a = dspbuf[sel];
@@ -718,25 +701,19 @@ line level    source
  672   1          {
  673   2              if (a & b)
  674   2                  D_SER = 1;
-*** ERROR C202 IN LINE 674 OF TEST1.C: 'D_SER': undefined identifier
  675   2              else
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 12  
+
  676   2                  D_SER = 0;
-*** ERROR C202 IN LINE 676 OF TEST1.C: 'D_SER': undefined identifier
  677   2              D_SRCLK = 0;
-*** ERROR C202 IN LINE 677 OF TEST1.C: 'D_SRCLK': undefined identifier
  678   2              D_SRCLK = 1;
-*** ERROR C202 IN LINE 678 OF TEST1.C: 'D_SRCLK': undefined identifier
  679   2              D_SRCLK = 0;
-*** ERROR C202 IN LINE 679 OF TEST1.C: 'D_SRCLK': undefined identifier
  680   2              b = b >> 1;
  681   2              // b=b&0x7fff;
  682   2          }
  683   1          D_RCLK = 0;
-*** ERROR C202 IN LINE 683 OF TEST1.C: 'D_RCLK': undefined identifier
  684   1          D_RCLK = 1;
-*** ERROR C202 IN LINE 684 OF TEST1.C: 'D_RCLK': undefined identifier
  685   1          D_RCLK = 0;
-*** ERROR C202 IN LINE 685 OF TEST1.C: 'D_RCLK': undefined identifier
  686   1      }
  687          void fdisp(unsigned char n,unsigned char m)
  688          {
@@ -759,79 +736,66 @@ line level    source
  705          unsigned char GetADC()
  706          {
  707   1          ADC_CONTR = ADC_CONTR | ADC_POWER | 3 | ADC_START;
-*** ERROR C202 IN LINE 707 OF TEST1.C: 'ADC_CONTR': undefined identifier
  708   1          _nop_(); // wait
  709   1          _nop_();
  710   1          _nop_();
  711   1          _nop_();
  712   1          while (!(ADC_CONTR & ADC_FLAG))
-*** ERROR C202 IN LINE 712 OF TEST1.C: 'ADC_CONTR': undefined identifier
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 13  
-
  713   1              ;                   // 等待A/D标志位变1，ADC_FLAG
  714   1          ADC_CONTR &= ~ADC_FLAG; // 标志位清零
-*** ERROR C202 IN LINE 714 OF TEST1.C: 'ADC_CONTR': undefined identifier
  715   1          return ADC_RES;
-*** ERROR C202 IN LINE 715 OF TEST1.C: 'ADC_RES': undefined identifier
  716   1      }
  717          
  718          
  719          void init_ad() // ad寄存器初始化
  720          {
  721   1          P1ASF = 0x08;     // P1.3作为ad输入
-*** ERROR C202 IN LINE 721 OF TEST1.C: 'P1ASF': undefined identifier
  722   1          ADC_CONTR = 0xE3; // ADC控制寄存器         Bit7    Bit6    Bit5    Bit4    Bit3    Bit2    Bit1    Bit
              -0
-*** ERROR C202 IN LINE 722 OF TEST1.C: 'ADC_CONTR': undefined identifier
  723   1                            // 位描述            ADC_POWER  SPEED1 SPEED0 ADC_FLAG ADC_START CHS2    CHS1    CHS
              -0
  724   1                            // 初始值=0000,0000      0       0       0       0       0       0       0       0
  725   1                            // 设置值=0000,0000      1       1       1       0       0       0       1       1
  726   1          AUXR1 &= 0xfb;    // 高8位存储在在ADC_RES
-*** ERROR C202 IN LINE 726 OF TEST1.C: 'AUXR1': undefined identifier
  727   1          CLK_DIV = 0x01;   // 系统时钟/2
-*** ERROR C202 IN LINE 727 OF TEST1.C: 'CLK_DIV': undefined identifier
  728   1      }
  729          void init_special_interrupts() // 中断初始化
  730          {
  731   1          EX0 = 0;
-*** ERROR C202 IN LINE 731 OF TEST1.C: 'EX0': undefined identifier
  732   1          ET0 = 1; // 定时器0中断
-*** ERROR C202 IN LINE 732 OF TEST1.C: 'ET0': undefined identifier
  733   1          EX1 = 0;
-*** ERROR C202 IN LINE 733 OF TEST1.C: 'EX1': undefined identifier
  734   1          ET1 = 1; // 定时器1中断
-*** ERROR C202 IN LINE 734 OF TEST1.C: 'ET1': undefined identifier
  735   1          ES = 1;
-*** ERROR C202 IN LINE 735 OF TEST1.C: 'ES': undefined identifier
+C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 13  
+
  736   1          EA = 1; // 总中断
-*** ERROR C202 IN LINE 736 OF TEST1.C: 'EA': undefined identifier
  737   1          PT0 = 0;
-*** ERROR C202 IN LINE 737 OF TEST1.C: 'PT0': undefined identifier
  738   1          PX1 = 1;
-*** ERROR C202 IN LINE 738 OF TEST1.C: 'PX1': undefined identifier
  739   1          PS = 0;
-*** ERROR C202 IN LINE 739 OF TEST1.C: 'PS': undefined identifier
  740   1      }
  741          void init_timer0() // 定时器0初始化
  742          {                  // 1/4ms
  743   1          TMOD &= 0XF0;  // Timer0设置清除
-*** ERROR C202 IN LINE 743 OF TEST1.C: 'TMOD': undefined identifier
  744   1          TMOD |= 0X02;  // 8位自动重载
-*** ERROR C202 IN LINE 744 OF TEST1.C: 'TMOD': undefined identifier
  745   1          TL0 = 0X06;
-*** ERROR C202 IN LINE 745 OF TEST1.C: 'TL0': undefined identifier
  746   1          TH0 = 0X06;
-*** ERROR C202 IN LINE 746 OF TEST1.C: 'TH0': undefined identifier
  747   1          TR0 = 1;
-*** ERROR C202 IN LINE 747 OF TEST1.C: 'TR0': undefined identifier
  748   1          ET0 = 1;
-*** ERROR C202 IN LINE 748 OF TEST1.C: 'ET0': undefined identifier
  749   1      }
  750          
  751          
-C51 COMPILER V9.01   TEST1                                                                 04/27/2023 15:56:58 PAGE 14  
-
  752          
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  45 ERROR(S)
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1894    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   8000    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     71       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

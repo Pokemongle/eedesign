@@ -356,20 +356,10 @@
               <FileType>1</FileType>
               <FilePath>.\test1.c</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>App</GroupName>
-          <Files>
             <File>
-              <FileName>adda.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\App\adda\adda.c</FilePath>
-            </File>
-            <File>
-              <FileName>adda.h</FileName>
+              <FileName>STC12C5A.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\App\adda\adda.h</FilePath>
+              <FilePath>.\STC12C5A.h</FilePath>
             </File>
           </Files>
         </Group>

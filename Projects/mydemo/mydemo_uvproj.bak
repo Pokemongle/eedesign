@@ -352,11 +352,6 @@
               <FilePath>.\STARTUP.A51</FilePath>
             </File>
             <File>
-              <FileName>STC12C5A.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\STC12C5A.h</FilePath>
-            </File>
-            <File>
               <FileName>test1.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\test1.c</FilePath>
