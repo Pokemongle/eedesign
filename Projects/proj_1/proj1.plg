@@ -1,0 +1,128 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\Code_files\51\demos\Projects\proj_1\proj1.uvproj
+Project File Date:  05/11/2023
+
+<h2>Output:</h2>
+compiling test1.c...
+test1.c(2): warning C318: can't open file 'STC12C5A.h'
+TEST1.C(23): error C202: 'P1': undefined identifier
+TEST1.C(24): error C202: 'P1': undefined identifier
+TEST1.C(25): error C202: 'P1': undefined identifier
+TEST1.C(27): error C202: 'P3': undefined identifier
+TEST1.C(28): error C202: 'P3': undefined identifier
+TEST1.C(169): error C202: 'EA': undefined identifier
+TEST1.C(219): error C202: 'EA': undefined identifier
+TEST1.C(587): error C202: 'KEY1': undefined identifier
+TEST1.C(591): error C202: 'KEY2': undefined identifier
+TEST1.C(653): error C202: 'D_SER': undefined identifier
+TEST1.C(655): error C202: 'D_SER': undefined identifier
+TEST1.C(656): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(657): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(658): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(674): error C202: 'D_SER': undefined identifier
+TEST1.C(676): error C202: 'D_SER': undefined identifier
+TEST1.C(677): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(678): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(679): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(683): error C202: 'D_RCLK': undefined identifier
+TEST1.C(684): error C202: 'D_RCLK': undefined identifier
+TEST1.C(685): error C202: 'D_RCLK': undefined identifier
+TEST1.C(707): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(712): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(714): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(715): error C202: 'ADC_RES': undefined identifier
+TEST1.C(721): error C202: 'P1ASF': undefined identifier
+TEST1.C(722): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(726): error C202: 'AUXR1': undefined identifier
+TEST1.C(727): error C202: 'CLK_DIV': undefined identifier
+TEST1.C(731): error C202: 'EX0': undefined identifier
+TEST1.C(732): error C202: 'ET0': undefined identifier
+TEST1.C(733): error C202: 'EX1': undefined identifier
+TEST1.C(734): error C202: 'ET1': undefined identifier
+TEST1.C(735): error C202: 'ES': undefined identifier
+TEST1.C(736): error C202: 'EA': undefined identifier
+TEST1.C(737): error C202: 'PT0': undefined identifier
+TEST1.C(738): error C202: 'PX1': undefined identifier
+TEST1.C(739): error C202: 'PS': undefined identifier
+TEST1.C(743): error C202: 'TMOD': undefined identifier
+TEST1.C(744): error C202: 'TMOD': undefined identifier
+TEST1.C(745): error C202: 'TL0': undefined identifier
+TEST1.C(746): error C202: 'TH0': undefined identifier
+TEST1.C(747): error C202: 'TR0': undefined identifier
+TEST1.C(748): error C202: 'ET0': undefined identifier
+test1.c - 45 Error(s), 1 Warning(s).
+compiling test1.c...
+test1.c(2): warning C318: can't open file 'STC12C5A.h'
+TEST1.C(23): error C202: 'P1': undefined identifier
+TEST1.C(24): error C202: 'P1': undefined identifier
+TEST1.C(25): error C202: 'P1': undefined identifier
+TEST1.C(27): error C202: 'P3': undefined identifier
+TEST1.C(28): error C202: 'P3': undefined identifier
+TEST1.C(169): error C202: 'EA': undefined identifier
+TEST1.C(219): error C202: 'EA': undefined identifier
+TEST1.C(587): error C202: 'KEY1': undefined identifier
+TEST1.C(591): error C202: 'KEY2': undefined identifier
+TEST1.C(653): error C202: 'D_SER': undefined identifier
+TEST1.C(655): error C202: 'D_SER': undefined identifier
+TEST1.C(656): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(657): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(658): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(674): error C202: 'D_SER': undefined identifier
+TEST1.C(676): error C202: 'D_SER': undefined identifier
+TEST1.C(677): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(678): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(679): error C202: 'D_SRCLK': undefined identifier
+TEST1.C(683): error C202: 'D_RCLK': undefined identifier
+TEST1.C(684): error C202: 'D_RCLK': undefined identifier
+TEST1.C(685): error C202: 'D_RCLK': undefined identifier
+TEST1.C(707): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(712): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(714): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(715): error C202: 'ADC_RES': undefined identifier
+TEST1.C(721): error C202: 'P1ASF': undefined identifier
+TEST1.C(722): error C202: 'ADC_CONTR': undefined identifier
+TEST1.C(726): error C202: 'AUXR1': undefined identifier
+TEST1.C(727): error C202: 'CLK_DIV': undefined identifier
+TEST1.C(731): error C202: 'EX0': undefined identifier
+TEST1.C(732): error C202: 'ET0': undefined identifier
+TEST1.C(733): error C202: 'EX1': undefined identifier
+TEST1.C(734): error C202: 'ET1': undefined identifier
+TEST1.C(735): error C202: 'ES': undefined identifier
+TEST1.C(736): error C202: 'EA': undefined identifier
+TEST1.C(737): error C202: 'PT0': undefined identifier
+TEST1.C(738): error C202: 'PX1': undefined identifier
+TEST1.C(739): error C202: 'PS': undefined identifier
+TEST1.C(743): error C202: 'TMOD': undefined identifier
+TEST1.C(744): error C202: 'TMOD': undefined identifier
+TEST1.C(745): error C202: 'TL0': undefined identifier
+TEST1.C(746): error C202: 'TH0': undefined identifier
+TEST1.C(747): error C202: 'TR0': undefined identifier
+TEST1.C(748): error C202: 'ET0': undefined identifier
+test1.c - 45 Error(s), 1 Warning(s).
+compiling test1.c...
+test1.c - 0 Error(s), 0 Warning(s).
+Build target 'src'
+assembling STARTUP.A51...
+compiling test1.c...
+linking...
+Program Size: data=84.1 xdata=8000 code=3753
+creating hex file from "proj1"...
+"proj1" - 0 Error(s), 0 Warning(s).
+compiling test1.c...
+test1.c - 0 Error(s), 0 Warning(s).
+Build target 'src'
+linking...
+Program Size: data=84.1 xdata=8000 code=3753
+creating hex file from "proj1"...
+"proj1" - 0 Error(s), 0 Warning(s).
+Build target 'src'
+assembling STARTUP.A51...
+compiling test1.c...
+linking...
+Program Size: data=84.1 xdata=8000 code=3753
+creating hex file from "proj1"...
+"proj1" - 0 Error(s), 0 Warning(s).
