@@ -1,3 +1,6 @@
 "STARTUP.obj",
-"test1.obj" 
+"main.obj",
+".\adda.obj",
+".\key.obj",
+".\led.obj" 
 TO "proj1" 

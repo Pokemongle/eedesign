@@ -3,13 +3,15 @@
 #include <absacc.h>
 #include <intrins.h>
 #include <math.h>
+#include"adda.h"
+#include"key.h"
+#include"led.h"
 //=========================
 
 //===============宏定义======================
 #define DA_CH1 XBYTE[0x4000] // DA显示通道CH1
 #define DA_CH2 XBYTE[0x2000] // DA显示通道CH2
 #define MEMO_LEN 	8000 // 回放显示存储长度(BYTE)
-#define WIN_SIZE	8
 #define AD_LEN 250
 #define SIN 1// 正弦波
 #define TRI 2// 三角波
@@ -68,31 +70,6 @@ dspchar[10] = {	 // 数码管字符表0-9
 	0x4d,0x89,0x81,0x3d,
 	0x01,0x09	
 },
-/*
-		case 0: c = 0x11; break;
-		case 1: c = 0x7d; break;
-		case 2: c = 0x23; break;
-		case 3: c = 0x29; break;
-		case 4: c = 0x4d; break;
-		case 5: c = 0x89; break;
-		case 6: c = 0x81; break;
-		case 7: c = 0x3d; break;
-		case 8: c = 0x01; break;
-		case 9: c = 0x09; break;
-		default:c = 0xff; break;
-
-keysta[8] = {	 // 按键状态，0-弹起，1-按下
-	0,0,0,0,
-	0,0,0,0
-},
-backup[8] = {	 // 按键值备份，保存前一次的值
-	0,0,0,0,
-	0,0,0,0
-},						    
-keybuf[8] = {	 // 按键扫描缓冲区
-	0x00,0x00,0x00,0x00,
-	0x00,0x00,0x00,0x00 	
-},*/
     sel = 0,            // 数码管位选
     key_sta = 0;        // 按键状态
 unsigned char xdata
@@ -110,7 +87,6 @@ unsigned char
 	flag_fre = 0,  // 数码管显示频率标志
 	key_col = 0,   // 按键扫描当前列
 	key_num = 0,   // 按键序号
-	memo_p = 0,	   // A/D采集存储区指针
 	mode = 0,	   // 模式选择
 	review_p = 0,  // D/A回放显示指针
 	rec_count = 0, // 方波信号发生计数
@@ -118,21 +94,19 @@ unsigned char
 	rec_value = 64,// 方波信号
 	tri_value = 64,// 三角波信号
 	tri_flag = 1,  // 三角波幅值递增递减标志
-	//volt_max = 192,// 电压最大值
-	//volt_min = 64, // 电压最小值
 	wave_sel = 0,  // 信号发生器波形选择
 	i = 0,		   // 按键扫描位选
 	fre_p1 = 1,	   // 频率测量指针1 
 	fre_p2 = 1,	   // 频率测量指针2
-	amp_p1 = 129,  // 频率测量指针
-	amp_p2 = 129,  // 频率测量指针
+	amp_p1 = 129,  // 频率测量指针1
+	amp_p2 = 129,  // 频率测量指针2
 	key_p = 0;	   // 按键扫描缓冲区指针
 unsigned int
-	//fre_es = 0,    // 测量的频率
 	fre_count = 0, // 幅值测量计数
 	fre_sum = 0,   // 频率测量累加
 	time_count = 0,// 测量时间计数
 	angle = 0,	   // 正弦波角度，角度值，[0,360]
+	memo_p = 0,	   // A/D采集存储区指针
 	da_count = 0,  // 信号发生器定时计数
 	da_index = 2,// 调幅参数
     clocktime = 0, //
@@ -142,9 +116,6 @@ float
 	sinAngle = 0.0f,  // 正弦波角度，弧度制，[-1,1] 
 	fre_es = 0.0f,	  // 测量的频率
 	amp_es = 0.0f;	  // 幅值测量值，弧度制，[-5,5]
-
-    
-
 //======================================================
 
 //==============函数体===============
@@ -184,19 +155,6 @@ void interrupt_timer0() interrupt 1 // 定时器0中断处理
 	}
 	else if(mode == 3){ // CH1: 实时采样 CH2: 输出0V	
 		//time_count++;
-		ad_measure();
-		/*
-		if(time_count >= 250){// 0.25ms*400=0.1s更新一次测量值
-		 	time_count = 0;
-			//fre_es = fre_count / 0.15f;  // 输出测量频率
-			fre_es = 500.0f / (fre_sum * 1.0f / fre_count);
-			amp_es = 5.0f*((ad_max - ad_min) / 256.0f); // 输出测量幅值
-			fre_sum = 0; fre_count = 0;
-			fre_p1 = fre_p2 = 1;
-			amp_p1 = amp_p2 = 129;
-			ad_max = ad_min = 128;
-		}
-	   */
 		dspbuf_measure();//数码管显示缓存改变
 		ad_result = ((int)(ad_result / 2.0 + 64));
 	}
@@ -211,15 +169,11 @@ void interrupt_timer0() interrupt 1 // 定时器0中断处理
 	}
 	dsptask();		// 数码管扫描
 	key_service(); 	// 按键扫描
-	//da_process();	// 显示值预处理
-	//ad_result = ((int)(ad_result / 2.0 + 64)); // 输出预处理
     da_display();	// D/A显示
 	EA = 1;
 }
 void da_process(){ 	// 处理待显示的D/A输出值
 	da_result = (int)(da_result * 1.0f / da_index + 128.0f -128.0f / da_index); 
-	//da_result = (int)((da_result - 128.0f)*(da_index * 1.0f / 10000.0f) + 128.0f);
-	//da_result = (int)(da_result * 1.0f / da_index + 128.0f -128.0f / da_index);
 }
 void da_display()
 {										
@@ -305,32 +259,6 @@ void dspbuf_measure()	// 将采样得到的频率和幅值显示到数码管上
 		dspbuf[2] = dspchar[integer_fre / 10 % 10];
 		dspbuf[1] = dspchar[integer_fre / 100 % 10];
 		dspbuf[0] = dspchar[integer_fre / 1000 % 10];
-		/*
-		if(fre_es >= 100 && fre_es <1000){ // 频率最大为三位数
-			integer_fre = (int)fre_es;
-			fraction_fre = (int)(10*(fre_es-integer_fre));	// 显示1位小数
-			dspbuf[3] = dspchar[fraction_fre];
-			dspbuf[2] = dspchar[integer_fre % 10] & 0xfe;// 加小数点
-			dspbuf[1] = dspchar[integer_fre / 10 % 10] ; 
-			dspbuf[0] = dspchar[integer_fre / 100 % 10]; 	
-		}
-		else if(fre_es >= 1000 && fre_es <10000) //频率为四位数
-		{
-			integer_fre = (int)fre_es; 
-			dspbuf[3] = dspchar[integer_fre % 10];
-			dspbuf[2] = dspchar[integer_fre / 10 % 10];
-			dspbuf[1] = dspchar[integer_fre / 100 % 10]; 	
-			dspbuf[0] = dspchar[integer_fre / 1000 % 10];
-		}
-		else if(fre_es > 0 && fre_es <10){//频率为一位数
-			integer_fre = (int)fre_es;
-			fraction_fre = (int)(1000*(fre_es - integer_fre));
-			dspbuf[0] = dspchar[integer_fre] & 0xfe;//加小数点
-			dspbuf[3] = dspchar[fraction_fre % 10];
-			dspbuf[2] = dspchar[fraction_fre / 10 % 10] ; 
-			dspbuf[1] = dspchar[fraction_fre / 100 % 10]; 	 	
-		}
-		*/
 	}
 	// 幅值转换为数码管显示
 	else if(flag_amp){
@@ -348,19 +276,6 @@ void dspbuf_measure()	// 将采样得到的频率和幅值显示到数码管上
 }
 void ad_measure()	// 频率幅值单次检测
 {
-	/*
-	if(ad_result > ad_max + WIN_SIZE / 2){// 测量值超过最大值窗口上界
-		ad_max = ad_result; // 更新测量最大值
-		time_count = 1;		// 测量时间计数重新计数
-		fre_count = 1;		// 最大值采样次数重新计数为1，即当前值
-	}
-	else if(ad_result >= ad_max - WIN_SIZE / 2){// 测量值在窗口内
-		fre_count++; 	// 最大值采样技术加1
-	}
-	if(ad_result < ad_min - WIN_SIZE / 2){// 测量值超过最小值窗口下界
-		ad_min = ad_result; //	更新测量最小值
-	}
-	*/
 	// 频率测量
 	amp_p2 = ad_result;
 	time_count++;
@@ -389,20 +304,7 @@ void ad_measure()	// 频率幅值单次检测
 		fre_p1 = fre_p2 = 0;
 		amp_p1 = amp_p2 = 129;
 		ad_max = ad_min = 128;
-	}
-	/*
-		if(time_count >= 250){// 0.25ms*400=0.1s更新一次测量值
-		 	time_count = 0;
-			//fre_es = fre_count / 0.15f;  // 输出测量频率
-			fre_es = 500.0f / (fre_sum * 1.0f / fre_count);
-			amp_es = 5.0f*((ad_max - ad_min) / 256.0f); // 输出测量幅值
-			fre_sum = 0; fre_count = 0;
-			fre_p1 = fre_p2 = 1;
-			amp_p1 = amp_p2 = 129;
-			ad_max = ad_min = 128;
-		}
-	   */	
-
+	}	
 }
 
 void mode_select()	// 模式选择
@@ -447,21 +349,12 @@ void mode_select()	// 模式选择
 				flag_fre = 1;
 			}
 			else if(mode == 4){		// 模式4下，按键5表示频率1
-				/*if(gen_count >= 50000){
-					gen_count = 50000;
-				}
-				else{
-					gen_count++;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 4;
 				}
 				if(amp_modi){
 				 	da_index = 2;
 				}
-				//gen_count = 4;
-				//da_index = 2;
 			}
 		};break;
 		case 6:{
@@ -474,13 +367,6 @@ void mode_select()	// 模式选择
 				flag_amp = 1;		
 			} 
 			else if(mode == 4){		// 模式4下，按键6表示频率2
-				/*
-				if(gen_count <= 4){
-					gen_count = 4;
-				}else{
-					gen_count--;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 3;
 				}
@@ -499,14 +385,6 @@ void mode_select()	// 模式选择
 				amp_modi = 0;
 			}
 			else if(mode == 4){		// 模式4下，按键7表示幅度减小,频率3
-			 	/*
-				if(da_index <= 1000){
-					da_index = 1000;
-				}
-				else{
-				 	da_index--;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 2;
 				}
@@ -525,14 +403,6 @@ void mode_select()	// 模式选择
 				amp_modi = 1;
 			}
 			else if(mode == 4){		// 模式4下，按键8表示幅度增大,频率4
-				/*
-				if(da_index >= 5000){
-				 	da_index = 5000;
-				}
-				else{
-				 	da_index++;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 1;
 				}
@@ -545,38 +415,6 @@ void mode_select()	// 模式选择
 	}
 	
 }
-/*
-unsigned char amp = 128;
-unsigned char amp_up = 128, amp_low =128;
-float adamp = 0.0f;
-unsigned int num = 0;
-void amp_measure() // 幅值测量
-{
-    //int i = 0;
-    amp = ad_result;
-    memo_p++;
-    if (amp > amp_up)
-    {
-        amp_up = amp;
-    }
-    if (amp < amp_low)
-    {
-        amp_low = amp;
-    }
-    if (memo_p >= MEMO_LEN)
-    {
-        adamp = (amp_up * 5.0 - amp_low * 5.0) / 256;
-        memo_p = 0;
-        amp_up = amp_low = 128;
-    }
-
-    num =(int)adamp*1000;
-	fdisp(num%10,0);
-	fdisp(num/10%10,1);
-	fdisp(num/100%10,2);
-	fdisp(num/1000%10,3);
-}
-*/
 
 void key_service()
 {
@@ -592,27 +430,6 @@ void key_service()
 	}
 	
 }
-/*
-void ad_delay()
-{
-    _nop_();
-    _nop_();
-    _nop_();
-    _nop_();
-}
-*/
-/*
-void ad_get()
-{
-    ADC_RES = 0;       // ADC存储缓存清零
-    ADC_CONTR |= 0x08; // ADCSTART = 1
-    ad_delay();        // 必要的4个nop
-    while (ADC_CONTR & 0x10 == 0)
-        ;                // ADC_FLAG = 0,等待ADC_FLAG = 1
-    ADC_CONTR &= 0xE7;   // 上述两位清零等待下次采样
-    ad_result = ADC_RES; // 保存采样值
-}
-*/
 
 void ad_save() // A/D采样值存储
 {

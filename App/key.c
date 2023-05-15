@@ -2,13 +2,38 @@
 #include <STC12C5A.h> // 51标准头文件
 #include "key.h"
 #include "led.h"
+#include "adda.h"
 //==========
 //==变量声明==
-unsigned char 
-	key_num = 0,	// 按键序号
-	mode = 0,	    // 模式选择
-	wave_sel = 0;   // 信号发生器波形选择
+unsigned char
+	amp_modi = 0,  // 调幅标志
+	da_index = 2,  // 调幅参数
+	flag_amp = 0,  // 显示幅值标志
+	flag_fre = 0,  // 显示频率标志 
+	fre_modi = 0,  // 调频标志
+	key_col = 0,   // 按键扫描当前列
+	key_num = 0,   // 按键序号
+	key_sta = 0,
+	mode = 0,	   // 模式选择
+	wave_sel = 0;  // 信号发生器波形选择
+unsigned int
+	gen_count = 4; // 信号发生器频率控制
+
 //============
+void key_service()
+{
+	if(key_sta & 0x01) return;//key_sta.0 = 1，按键为按下状态
+	// key_sta.0 = 0，按键为弹起状态，检测到KEY1/KEY2行有按键被按下
+	if(KEY1){
+	 	key_num = key_col + 1; 
+		key_sta = key_sta | 0x01;//key_sta.0 = 1
+	}	
+	else if(KEY2){
+	 	key_num = key_col + 5;
+		key_sta = key_sta | 0x01;//key_sta.0 = 1	
+	}
+	
+}
 void mode_select()	// 模式选择
 {
  	switch(key_num){
@@ -51,21 +76,12 @@ void mode_select()	// 模式选择
 				flag_fre = 1;
 			}
 			else if(mode == 4){		// 模式4下，按键5表示频率1
-				/*if(gen_count >= 50000){
-					gen_count = 50000;
-				}
-				else{
-					gen_count++;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 4;
 				}
 				if(amp_modi){
 				 	da_index = 2;
 				}
-				//gen_count = 4;
-				//da_index = 2;
 			}
 		};break;
 		case 6:{
@@ -78,13 +94,6 @@ void mode_select()	// 模式选择
 				flag_amp = 1;		
 			} 
 			else if(mode == 4){		// 模式4下，按键6表示频率2
-				/*
-				if(gen_count <= 4){
-					gen_count = 4;
-				}else{
-					gen_count--;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 3;
 				}
@@ -103,14 +112,6 @@ void mode_select()	// 模式选择
 				amp_modi = 0;
 			}
 			else if(mode == 4){		// 模式4下，按键7表示幅度减小,频率3
-			 	/*
-				if(da_index <= 1000){
-					da_index = 1000;
-				}
-				else{
-				 	da_index--;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 2;
 				}
@@ -129,14 +130,6 @@ void mode_select()	// 模式选择
 				amp_modi = 1;
 			}
 			else if(mode == 4){		// 模式4下，按键8表示幅度增大,频率4
-				/*
-				if(da_index >= 5000){
-				 	da_index = 5000;
-				}
-				else{
-				 	da_index++;
-				}
-				*/
 				if(fre_modi){
 				 	gen_count = 1;
 				}
@@ -146,6 +139,5 @@ void mode_select()	// 模式选择
 			}
 		}; break;
 		default:break;
-	}
-	
+	}	
 }
