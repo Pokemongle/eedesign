@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:41:55 PAGE 1   
+C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:54:23 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE ADDA
@@ -62,7 +62,7 @@ line level    source
   52   1              ;                   // 等待A/D标志位变1，ADC_FLAG
   53   1          ADC_CONTR &= ~ADC_FLAG; // 标志位清零
   54   1          return ADC_RES;
-C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:41:55 PAGE 2   
+C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:54:23 PAGE 2   
 
   55   1      }
   56          void ad_save() // A/D采样值存储
@@ -126,7 +126,7 @@ line level    source
  114   2                      case 4:{        // 模式4 信号发生器调频、调幅
  115   3                              DA_CH1 = ad_result; // 实时显示
  116   3                              DA_CH2 = da_result; // 信号发生器       
-C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:41:55 PAGE 3   
+C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:54:23 PAGE 3   
 
  117   3                      };break;
  118   2                      default: ;break;
@@ -190,7 +190,7 @@ line level    source
  176   2                      unsigned int fraction_fre = 0;
  177   2                      integer_fre = (int)fre_es;
  178   2                      dspbuf[3] = dspchar[integer_fre % 10];
-C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:41:55 PAGE 4   
+C51 COMPILER V9.01   ADDA                                                                  05/15/2023 14:54:23 PAGE 4   
 
  179   2                      dspbuf[2] = dspchar[integer_fre / 10 % 10];
  180   2                      dspbuf[1] = dspchar[integer_fre / 100 % 10];

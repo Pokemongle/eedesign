@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 1   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE TEST1
@@ -62,7 +62,7 @@ line level    source
   53          //---------CH1: 采样实时输出，同时存储输入
   54          //---------CH2: 信号发生器      正弦波|三角波|方波|锯齿波                                               
   55          //--模式2：波形回放显示模式                                                                                                                     
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 2   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 2   
 
   56          //---------CH1: 采样实时输出
   57          //---------CH2：输出模式1中存储的信号的波形                                                                                                                             
@@ -126,7 +126,7 @@ line level    source
  115                  memo_p = 0,        // A/D采集存储区指针
  116                  mode = 0,          // 模式选择
  117                  review_p = 0,  // D/A回放显示指针
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 3   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 3   
 
  118                  rec_count = 0, // 方波信号发生计数
  119                  saw_value = 64,// 锯齿波信号
@@ -190,7 +190,7 @@ line level    source
  177   3                              da_generator();
  178   3                              da_process();   // 显示值预处理
  179   3                      }
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 4   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 4   
 
  180   2                      // 模式1对实时采样值进行存储
  181   2                      ad_result = ((int)(ad_result / 2.0 + 64));
@@ -254,7 +254,7 @@ line level    source
  239   3                      };break;
  240   2                      case 3:{        // 模式3 测量模式
  241   3                              DA_CH1 = ad_result;// 实时测量 
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 5   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 5   
 
  242   3                              DA_CH2 = 128; 
  243   3                      };break;
@@ -318,7 +318,7 @@ line level    source
  301   1              // 频率值转换为数码管显示
  302   1              if(flag_fre){
  303   2                      unsigned int integer_fre = 0;
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 6   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 6   
 
  304   2                      unsigned int fraction_fre = 0;
  305   2                      integer_fre = (int)fre_es;
@@ -382,7 +382,7 @@ line level    source
  363   1                      ad_min = ad_result; //  更新测量最小值
  364   1              }
  365   1              */
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 7   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 7   
 
  366   1              // 频率测量
  367   1              amp_p2 = ad_result;
@@ -446,7 +446,7 @@ line level    source
  425   3                              fdisp(0,3);     // 数码管最右端波形显示清零     
  426   3                      };break;
  427   2                      case 3:{                // 模式3：测量实时采样的幅值和频率（或周期）
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 8   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 8   
 
  428   3                              mode = 3;
  429   3                              fdisp(3,0);
@@ -510,7 +510,7 @@ line level    source
  487   5                                              gen_count = 3;
  488   5                                      }
  489   4                                      if(amp_modi){
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 9   
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 9   
 
  490   5                                              da_index = 3;
  491   5                                      }
@@ -574,7 +574,7 @@ line level    source
  549   1      }
  550          /*
  551          unsigned char amp = 128;
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 10  
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 10  
 
  552          unsigned char amp_up = 128, amp_low =128;
  553          float adamp = 0.0f;
@@ -638,7 +638,7 @@ line level    source
  611              ad_delay();        // 必要的4个nop
  612              while (ADC_CONTR & 0x10 == 0)
  613                  ;                // ADC_FLAG = 0,等待ADC_FLAG = 1
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 11  
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 11  
 
  614              ADC_CONTR &= 0xE7;   // 上述两位清零等待下次采样
  615              ad_result = ADC_RES; // 保存采样值
@@ -702,7 +702,7 @@ line level    source
  673   2              if (a & b)
  674   2                  D_SER = 1;
  675   2              else
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 12  
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 12  
 
  676   2                  D_SER = 0;
  677   2              D_SRCLK = 0;
@@ -766,7 +766,7 @@ line level    source
  733   1          EX1 = 0;
  734   1          ET1 = 1; // 定时器1中断
  735   1          ES = 1;
-C51 COMPILER V9.01   TEST1                                                                 05/11/2023 13:58:17 PAGE 13  
+C51 COMPILER V9.01   TEST1                                                                 05/15/2023 14:45:24 PAGE 13  
 
  736   1          EA = 1; // 总中断
  737   1          PT0 = 0;
