@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   KEY                                                                   05/15/2023 13:34:11 PAGE 1   
+C51 COMPILER V9.01   KEY                                                                   05/15/2023 14:41:55 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE KEY
@@ -62,7 +62,7 @@ line level    source
   52   3                              fdisp(0,3);     // 数码管最右端波形显示清零     
   53   3                      };break;
   54   2                      case 3:{                // 模式3：测量实时采样的幅值和频率（或周期）
-C51 COMPILER V9.01   KEY                                                                   05/15/2023 13:34:11 PAGE 2   
+C51 COMPILER V9.01   KEY                                                                   05/15/2023 14:41:55 PAGE 2   
 
   55   3                              mode = 3;
   56   3                              fdisp(3,0);
@@ -126,7 +126,7 @@ line level    source
  114   3                              else if(mode == 4){             // 模式4下，按键7表示幅度减小,频率3
  115   4                                      if(fre_modi){
  116   5                                              gen_count = 2;
-C51 COMPILER V9.01   KEY                                                                   05/15/2023 13:34:11 PAGE 3   
+C51 COMPILER V9.01   KEY                                                                   05/15/2023 14:41:55 PAGE 3   
 
  117   5                                      }
  118   4                                      if(amp_modi){

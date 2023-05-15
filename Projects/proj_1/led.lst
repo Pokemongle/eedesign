@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   LED                                                                   05/15/2023 13:34:11 PAGE 1   
+C51 COMPILER V9.01   LED                                                                   05/15/2023 14:41:55 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE LED
@@ -62,7 +62,7 @@ line level    source
   52   2              D_SRCLK = 0;
   53   2              b = b >> 1;
   54   2              // b=b&0x7f;
-C51 COMPILER V9.01   LED                                                                   05/15/2023 13:34:11 PAGE 2   
+C51 COMPILER V9.01   LED                                                                   05/15/2023 14:41:55 PAGE 2   
 
   55   2          }
   56   1          // 载入位选数码管对应的显示内容

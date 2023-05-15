@@ -14,8 +14,6 @@
 #include "adda.h"
 #include "key.h"
 #include "led.h"
-#define DA_CH1 XBYTE[0x4000] // DA显示通道CH1
-#define DA_CH2 XBYTE[0x2000] // DA显示通道CH2
 //==========
 //==函数声明==
 void init_ad();//A/D初始化
