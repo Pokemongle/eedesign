@@ -1,0 +1,6 @@
+"STARTUP.obj",
+"main.obj",
+".\adda.obj",
+".\key.obj",
+".\led.obj" 
+TO "proj2" 

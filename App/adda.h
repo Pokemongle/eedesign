@@ -8,6 +8,7 @@ void da_process();	  	// 处理待显示的D/A输出值
 void dspbuf_measure();	// 将采样得到的频率和幅值显示到数码管上
 //============
 #define MEMO_LEN 8000		 // 回放显示存储长度(BYTE)
+#define SAVE_GAP 300		 // 存储间隔
 #define DA_CH1 XBYTE[0x4000] // DA显示通道CH1
 #define DA_CH2 XBYTE[0x2000] // DA显示通道CH2
 #define PI 3.1415926535

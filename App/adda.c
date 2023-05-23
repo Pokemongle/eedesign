@@ -96,9 +96,8 @@ void ad_measure()	// 频率幅值单次检测
 void da_display()
 {										
 	switch(mode){
-	 	case 1:{	 // 模式1 CH1实时显示 CH2信号发生器
+	 	case 1:{	 // 模式1 CH1实时显示
 			DA_CH1 = ad_result;// 实时显示
-			DA_CH2 = da_result; // 信号发生器
 		};break;
 		case 2:{ 	 // 模式2 CH1实时显示 CH2回放显示
 		 	DA_CH1 = ad_result;// 实时显示
@@ -106,14 +105,6 @@ void da_display()
 			if (review_p >= MEMO_LEN){ // 若显示指针到达存储区末尾，从头开始显示
         		review_p = 0;
    			}
-		};break;
-		case 3:{	// 模式3 测量模式
-			DA_CH1 = ad_result;// 实时测量 
-			DA_CH2 = 128; 
-		};break;
-		case 4:{ 	// 模式4 信号发生器调频、调幅
-			DA_CH1 = ad_result; // 实时显示
-			DA_CH2 = da_result; // 信号发生器 	
 		};break;
 		default: ;break;
 	}

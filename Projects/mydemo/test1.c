@@ -704,7 +704,7 @@ void fdisp(unsigned char n,unsigned char m)
 }
 unsigned char GetADC()
 {
-    ADC_CONTR = ADC_CONTR | ADC_POWER | 3 | ADC_START;
+    ADC_CONTR = ADC_CONTR | ADC_POWER | 4 | ADC_START;
     _nop_(); // wait
     _nop_();
     _nop_();
@@ -718,8 +718,8 @@ unsigned char GetADC()
 
 void init_ad() // ad寄存器初始化
 {
-    P1ASF = 0x08;     // P1.3作为ad输入
-    ADC_CONTR = 0xE3; // ADC控制寄存器         Bit7    Bit6    Bit5    Bit4    Bit3    Bit2    Bit1    Bit0
+    P1ASF = 0x10;     // P1.4作为直流ad输入，P1.3作为交流ad输入
+    ADC_CONTR = 0xE4; // ADC控制寄存器         Bit7    Bit6    Bit5    Bit4    Bit3    Bit2    Bit1    Bit0
                       // 位描述            ADC_POWER  SPEED1 SPEED0 ADC_FLAG ADC_START CHS2    CHS1    CHS0
                       // 初始值=0000,0000      0       0       0       0       0       0       0       0
                       // 设置值=0000,0000      1       1       1       0       0       0       1       1

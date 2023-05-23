@@ -1,0 +1,112 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\Code_files\51\demos\Projects\proj_2\proj2.uvproj
+Project File Date:  05/18/2023
+
+<h2>Output:</h2>
+compiling main.c...
+main.c(9): warning C318: can't open file 'STC12C5A.h'
+..\..\APP\KEY.H(7): error C202: 'P3': undefined identifier
+..\..\APP\KEY.H(8): error C202: 'P3': undefined identifier
+MAIN.C(38): error C202: 'EA': undefined identifier
+MAIN.C(44): error C202: 'P1ASF': undefined identifier
+MAIN.C(45): error C202: 'ADC_CONTR': undefined identifier
+MAIN.C(49): error C202: 'AUXR1': undefined identifier
+MAIN.C(50): error C202: 'CLK_DIV': undefined identifier
+MAIN.C(54): error C202: 'TMOD': undefined identifier
+MAIN.C(55): error C202: 'TMOD': undefined identifier
+MAIN.C(56): error C202: 'TL0': undefined identifier
+MAIN.C(57): error C202: 'TH0': undefined identifier
+MAIN.C(58): error C202: 'TR0': undefined identifier
+MAIN.C(59): error C202: 'ET0': undefined identifier
+MAIN.C(63): error C202: 'EX0': undefined identifier
+MAIN.C(64): error C202: 'ET0': undefined identifier
+MAIN.C(65): error C202: 'EX1': undefined identifier
+MAIN.C(66): error C202: 'ET1': undefined identifier
+MAIN.C(67): error C202: 'ES': undefined identifier
+MAIN.C(68): error C202: 'EA': undefined identifier
+MAIN.C(69): error C202: 'PT0': undefined identifier
+MAIN.C(70): error C202: 'PX1': undefined identifier
+MAIN.C(71): error C202: 'PS': undefined identifier
+main.c - 22 Error(s), 1 Warning(s).
+compiling main.c...
+main.c(9): warning C318: can't open file 'STC12C5A.h'
+..\..\APP\KEY.H(7): error C202: 'P3': undefined identifier
+..\..\APP\KEY.H(8): error C202: 'P3': undefined identifier
+MAIN.C(38): error C202: 'EA': undefined identifier
+MAIN.C(44): error C202: 'P1ASF': undefined identifier
+MAIN.C(45): error C202: 'ADC_CONTR': undefined identifier
+MAIN.C(49): error C202: 'AUXR1': undefined identifier
+MAIN.C(50): error C202: 'CLK_DIV': undefined identifier
+MAIN.C(54): error C202: 'TMOD': undefined identifier
+MAIN.C(55): error C202: 'TMOD': undefined identifier
+MAIN.C(56): error C202: 'TL0': undefined identifier
+MAIN.C(57): error C202: 'TH0': undefined identifier
+MAIN.C(58): error C202: 'TR0': undefined identifier
+MAIN.C(59): error C202: 'ET0': undefined identifier
+MAIN.C(63): error C202: 'EX0': undefined identifier
+MAIN.C(64): error C202: 'ET0': undefined identifier
+MAIN.C(65): error C202: 'EX1': undefined identifier
+MAIN.C(66): error C202: 'ET1': undefined identifier
+MAIN.C(67): error C202: 'ES': undefined identifier
+MAIN.C(68): error C202: 'EA': undefined identifier
+MAIN.C(69): error C202: 'PT0': undefined identifier
+MAIN.C(70): error C202: 'PX1': undefined identifier
+MAIN.C(71): error C202: 'PS': undefined identifier
+main.c - 22 Error(s), 1 Warning(s).
+compiling main.c...
+main.c - 0 Error(s), 0 Warning(s).
+Build target 'src'
+assembling STARTUP.A51...
+compiling adda.c...
+compiling key.c...
+compiling led.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?AD_SAVE?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?AD_MEASURE?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DA_DISPLAY?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DA_GENERATOR?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DA_PROCESS?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DSPBUF_MEASURE?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?KEY_SERVICE?KEY
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DSPTASK?LED
+Program Size: data=78.1 xdata=8000 code=3290
+creating hex file from "proj2"...
+"proj2" - 0 Error(s), 8 Warning(s).
+Build target 'src'
+assembling STARTUP.A51...
+compiling main.c...
+compiling adda.c...
+compiling key.c...
+compiling led.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?AD_SAVE?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?AD_MEASURE?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DA_DISPLAY?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DA_GENERATOR?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DA_PROCESS?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DSPBUF_MEASURE?ADDA
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?KEY_SERVICE?KEY
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DSPTASK?LED
+Program Size: data=78.1 xdata=8000 code=3290
+creating hex file from "proj2"...
+"proj2" - 0 Error(s), 8 Warning(s).
