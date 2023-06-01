@@ -1,0 +1,607 @@
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE TEST
+OBJECT MODULE PLACED IN test.OBJ
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE test.c BROWSE INCDIR(..\..\Public) DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //==========头文件=========
+   2          #include <STC12C5A.h>
+   3          #include <absacc.h>
+   4          #include <intrins.h>
+   5          #include <math.h>
+   6          //=========================
+   7          
+   8          //===============宏定义======================
+   9          #define DA_CH1 XBYTE[0x4000] // DA显示通道CH1
+  10          #define DA_CH2 XBYTE[0x2000] // DA显示通道CH2
+  11          #define MEMO_LEN        8000 // 回放显示存储长度(BYTE)
+  12          #define WIN_SIZE        8
+  13          #define AD_LEN 250
+  14          #define SIN 1// 正弦波
+  15          #define TRI 2// 三角波
+  16          #define REC     3// 方波
+  17          #define SAW 4// 锯齿波
+  18          #define PI 3.1415926535          // 数学常数Π
+  19          //===========================================
+  20          
+  21          //============管脚定义================
+  22          //---------数码管连接芯片74CH565
+  23          sbit D_SER = P1 ^ 0;
+  24          sbit D_SRCLK = P1 ^ 1;
+  25          sbit D_RCLK = P1 ^ 2;
+  26          //---------键盘行扫描
+  27          sbit KEY1 = P3 ^ 5;
+  28          sbit KEY2 = P3 ^ 4;
+  29          //===================================
+  30          
+  31          //============函数声明===============
+  32          void ad_save();                 // A/D采样值存储
+  33          void ad_measure();                              // A/D测量
+  34          void amp_measure();                             // 幅值检测
+  35          void da_display();              // D/A显示
+  36          void da_generator();                    // 信号发生器
+  37          void da_process();                              // 处理[0,255]内的待显示D/A输出值
+  38          void dsptask();                 // 数码管显示函数
+  39          void dspbuf_measure();                  // 模式3，数码管显示缓存区为当前测量值
+  40          void fdisp(unsigned char n,unsigned char m);// 单个数码管显示                           
+  41          //n为数码管显示的数字 m为数码管位选     
+  42          unsigned char GetADC();         // A/D采样（单次）
+  43          void init_ad();                 // 内部A/D寄存器初始化
+  44          void init_timer0();             // 定时器0初始化
+  45          void init_special_interrupts(); // 中断初始化
+  46          void key_service();                             // 按键扫描
+  47          void mode_select();                         // 模式选择，修改对应数码管缓存区
+  48          //void memo_increment();                        // 存储读取位置更改 
+  49          //--模式1：波形实时显示模式
+  50          //---------CH1: 采样实时输出，同时存储输入
+  51          //---------CH2: 信号发生器      正弦波|三角波|方波|锯齿波                                               
+  52          //--模式2：波形回放显示模式                                                                                                                     
+  53          //---------CH1: 采样实时输出
+  54          //---------CH2：输出模式1中存储的信号的波形                                                                                                                             
+  55          //--模式3：测量模式
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 2   
+
+  56          //--模式4：调幅、调频模式
+  57          //---------CH1: 采样实时输出
+  58          //---------CH2: 信号发生器      正弦波|三角波|方波|锯齿波
+  59          
+  60          //===============全局变量声明===========================
+  61          unsigned char 
+  62          dspbuf[4] = {    // 数码管显示缓存
+  63              0x11, 0x11, 0x11, 0x11
+  64          }, 
+  65          dspchar[10] = {  // 数码管字符表0-9
+  66                  0x11,0x7d,0x23,0x29,
+  67                  0x4d,0x89,0x81,0x3d,
+  68                  0x01,0x09       
+  69          },
+  70              sel = 0,            // 数码管位选
+  71              key_sta = 0;        // 按键状态
+  72          unsigned char xdata
+  73              ad_memo[MEMO_LEN];  // A/D采集信号存储区
+  74          unsigned char
+  75                  amp_modi = 0,  // 调幅标志
+  76                  fre_modi = 0,  // 调频标志
+  77                  ad_max = 128,  // 测量信号当前最大值
+  78                  ad_min = 128,  // 测量信号当前最小值
+  79                  ad_count = 0,  // A/D采样计数
+  80              ad_result = 128, // A/D单次采集信号结果
+  81                  dag_p = 0,         // 信号发生器指针
+  82                  da_result = 0, // 信号发生器单次产生的数字信号
+  83                  flag_amp = 0,  // 数码管显示幅值
+  84                  flag_fre = 0,  // 数码管显示频率标志
+  85                  key_col = 0,   // 按键扫描当前列
+  86                  key_num = 0,   // 按键序号
+  87                  memo_p = 0,        // A/D采集存储区指针
+  88                  mode = 0,          // 模式选择
+  89                  review_p = 0,  // D/A回放显示指针
+  90                  rec_count = 0, // 方波信号发生计数
+  91                  saw_value = 64,// 锯齿波信号
+  92                  rec_value = 64,// 方波信号
+  93                  tri_value = 64,// 三角波信号
+  94                  tri_flag = 1,  // 三角波幅值递增递减标志
+  95                  wave_sel = 0,  // 信号发生器波形选择
+  96                  i = 0,             // 按键扫描位选
+  97                  fre_p1 = 1,        // 频率测量指针1 
+  98                  fre_p2 = 1,        // 频率测量指针2
+  99                  amp_p1 = 129,  // 频率测量指针
+ 100                  amp_p2 = 129,  // 频率测量指针
+ 101                  key_p = 0;         // 按键扫描缓冲区指针
+ 102          unsigned int
+ 103                  fre_count = 0, // 幅值测量计数
+ 104                  fre_sum = 0,   // 频率测量累加
+ 105                  time_count = 0,// 测量时间计数
+ 106                  angle = 0,         // 正弦波角度，角度值，[0,360]
+ 107                  da_count = 0,  // 信号发生器定时计数
+ 108                  da_index = 2,// 调幅参数
+ 109              clocktime = 0, //
+ 110                  gen_count = 4; // 信号发生器频率控制
+ 111                  
+ 112          float 
+ 113                  sinAngle = 0.0f,  // 正弦波角度，弧度制，[-1,1] 
+ 114                  fre_es = 0.0f,    // 测量的频率
+ 115                  amp_es = 0.0f;    // 幅值测量值，弧度制，[-5,5]
+ 116          //======================================================
+ 117          sbit Y = P1^4;
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 3   
+
+ 118          //==============函数体===============
+ 119          void main()
+ 120          {                                                                                                                                                                                                                                                                                                   
+ 121   1          init_timer0();
+ 122   1          init_special_interrupts();
+ 123   1          init_ad();
+ 124   1              Y = 1;
+ 125   1          while (1)
+ 126   1          {
+ 127   2              
+ 128   2                      if(key_sta & 0x01){//key_sta.0 = 0x01? key_sta.0 = 1检测到按键按下
+ 129   3                              mode_select();
+ 130   3                              key_sta = key_sta & 0xfe;//key_sta.0 = 0,按键弹起，等待下一次检测到按下
+ 131   3                      }
+ 132   2          }
+ 133   1      }
+ 134          void interrupt_timer0() interrupt 1 // 定时器0中断处理
+ 135          {
+ 136   1              ad_result = GetADC();// 单次采样                
+ 137   1              Y = ~Y;
+ 138   1              if(mode == 1){          // CH1：实时采样并存储 CH2: 信号发生器
+ 139   2                      // 信号发生
+ 140   2                      da_count++;
+ 141   2                      if(da_count >= gen_count){ // gen_count = 4时，每隔1ms输出一次D/A
+ 142   3                              da_count = 0;
+ 143   3                              da_generator();
+ 144   3                              da_process();   // 显示值预处理
+ 145   3                      }
+ 146   2                      // 模式1对实时采样值进行存储
+ 147   2                      ad_result = ((int)(ad_result / 2.0 + 64));
+ 148   2                      ad_save();
+ 149   2              }
+ 150   1              else if(mode == 2){     // CH1: 实时采样 CH2: 波形回放显示
+ 151   2                      ad_result = ((int)(ad_result / 2.0 + 64));      
+ 152   2              }
+ 153   1              else if(mode == 3){ // CH1: 实时采样 CH2: 输出0V        
+ 154   2                      //time_count++;
+ 155   2                      ad_measure();
+ 156   2                      dspbuf_measure();//数码管显示缓存改变
+ 157   2                      ad_result = ((int)(ad_result / 2.0 + 64));
+ 158   2              }
+ 159   1              else if(mode == 4){     // CH1: 实时采样 CH2: 信号发生器，调频调幅
+ 160   2                      // 信号发生器
+ 161   2                      da_count++;
+ 162   2                      if(da_count >= gen_count){ // gen_count = 4时，每隔1ms输出一次D/A
+ 163   3                              da_count = 0;
+ 164   3                              da_generator();
+ 165   3                              da_process();   // 显示值预处理
+ 166   3                      }       
+ 167   2              }
+ 168   1              dsptask();              // 数码管扫描
+ 169   1              key_service();  // 按键扫描
+ 170   1          da_display();       // D/A显示
+ 171   1      }
+ 172          void da_process(){      // 处理待显示的D/A输出值
+ 173   1              da_result = (int)(da_result * 1.0f / da_index + 128.0f -128.0f / da_index); 
+ 174   1      }
+ 175          void da_display()
+ 176          {                                                                               
+ 177   1              switch(mode){
+ 178   2                      case 1:{         // 模式1 CH1实时显示 CH2信号发生器
+ 179   3                              DA_CH1 = ad_result;// 实时显示
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 4   
+
+ 180   3                              //DA_CH2 = da_result; // 信号发生器
+ 181   3                              DA_CH2 = Y;
+ 182   3                      };break;
+ 183   2                      case 2:{         // 模式2 CH1实时显示 CH2回放显示
+ 184   3                              DA_CH1 = ad_result;// 实时显示
+ 185   3                              DA_CH2 = ad_memo[review_p++]; // 回放显示
+ 186   3                              if (review_p >= MEMO_LEN){ // 若显示指针到达存储区末尾，从头开始显示
+ 187   4                              review_p = 0;
+ 188   4                              }
+ 189   3                      };break;
+ 190   2                      case 3:{        // 模式3 测量模式
+ 191   3                              DA_CH1 = ad_result;// 实时测量 
+ 192   3                              DA_CH2 = 128; 
+ 193   3                      };break;
+ 194   2                      case 4:{        // 模式4 信号发生器调频、调幅
+ 195   3                              DA_CH1 = ad_result; // 实时显示
+ 196   3                              DA_CH2 = da_result; // 信号发生器       
+ 197   3                      };break;
+ 198   2                      default: ;break;
+ 199   2              }
+ 200   1      }
+ 201          void da_generator()
+ 202          {
+ 203   1              switch(wave_sel){ // 根据wave_sel的选择产生相应波形
+ 204   2                      case SIN:{      // 正弦波
+ 205   3                              angle++;
+ 206   3                              if(angle > 360){
+ 207   4                                      angle = 0;
+ 208   4                              }
+ 209   3                              sinAngle =      sin(((float)angle * PI / 180.0f));// 求角度对应的弧度值[-1,1]
+ 210   3                              da_result = (int)(((sinAngle + 1.0f) / 2.0f) * 255.0f); // 将[-1,1]内的sin值映射到[0,255]
+ 211   3                      };break;
+ 212   2                      case TRI:{      // 三角波
+ 213   3                              if(tri_flag){//递增
+ 214   4                                      tri_value++;
+ 215   4                                      if(tri_value == 255){
+ 216   5                                              tri_flag = 0;
+ 217   5                                      }       
+ 218   4                              }
+ 219   3                              else{//递减
+ 220   4                                      tri_value--;
+ 221   4                                      if(tri_value == 0){
+ 222   5                                              tri_flag = 1;
+ 223   5                                      }
+ 224   4                              }        
+ 225   3                              da_result = tri_value;  
+ 226   3                      };break;        
+ 227   2                      case REC:{      // 方波
+ 228   3                              rec_count++;
+ 229   3                              if(rec_count == 200){
+ 230   4                                      rec_count = 0;                  
+ 231   4                              }
+ 232   3                              if(rec_count>100){
+ 233   4                                      da_result = 255;
+ 234   4                              }else{
+ 235   4                                      da_result = 0;
+ 236   4                              }               
+ 237   3                      };break;
+ 238   2                      case SAW:{      // 锯齿波
+ 239   3                              saw_value++;
+ 240   3                              if(saw_value > 255){
+ 241   4                                      saw_value = 0;
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 5   
+
+ 242   4                              }       
+ 243   3                              da_result = saw_value;
+ 244   3                      };break;
+ 245   2                      default:da_result = 128;break;  
+ 246   2              }
+ 247   1      }
+ 248          
+ 249          void dspbuf_measure()   // 将采样得到的频率和幅值显示到数码管上
+ 250          {
+ 251   1              // 频率值转换为数码管显示
+ 252   1              if(flag_fre){
+ 253   2                      unsigned int integer_fre = 0;
+ 254   2                      unsigned int fraction_fre = 0;
+ 255   2                      integer_fre = (int)fre_es;
+ 256   2                      dspbuf[3] = dspchar[integer_fre % 10];
+ 257   2                      dspbuf[2] = dspchar[integer_fre / 10 % 10];
+ 258   2                      dspbuf[1] = dspchar[integer_fre / 100 % 10];
+ 259   2                      dspbuf[0] = dspchar[integer_fre / 1000 % 10];
+ 260   2              }
+ 261   1              // 幅值转换为数码管显示
+ 262   1              else if(flag_amp){
+ 263   2                      if(amp_es >= 0.0f && amp_es <10.0f){
+ 264   3                              unsigned int integer_amp = 0;
+ 265   3                              unsigned int fraction_amp = 0;
+ 266   3                              integer_amp = (int) amp_es;
+ 267   3                              fraction_amp = (int) ((amp_es-integer_amp)*1000);
+ 268   3                              dspbuf[0] = dspchar[integer_amp] & 0xfe;// 加小数点
+ 269   3                              dspbuf[1] = dspchar[fraction_amp / 100 % 10];
+ 270   3                              dspbuf[2] = dspchar[fraction_amp / 10 % 10];
+ 271   3                              dspbuf[3] = dspchar[fraction_amp % 10];
+ 272   3                      }
+ 273   2              } 
+ 274   1      }
+ 275          void ad_measure()       // 频率幅值单次检测
+ 276          {
+ 277   1              // 频率测量
+ 278   1              amp_p2 = ad_result;
+ 279   1              time_count++;
+ 280   1              if(amp_p2 > 128 && amp_p1 <= 128){
+ 281   2                      fre_p2 = time_count; 
+ 282   2                      if(fre_p1 != 0){
+ 283   3                              fre_sum = fre_sum + fabs(fre_p2 - fre_p1);
+ 284   3                              fre_count++;
+ 285   3                      }
+ 286   2                      fre_p1 = fre_p2;        
+ 287   2              }
+ 288   1              amp_p1 = amp_p2;
+ 289   1      
+ 290   1              // 幅值测量
+ 291   1              if(ad_result > ad_max){
+ 292   2                      ad_max = ad_result;
+ 293   2              }       
+ 294   1              if(ad_result < ad_min){
+ 295   2                      ad_min = ad_result;
+ 296   2              }
+ 297   1              if(time_count >= AD_LEN){
+ 298   2                      fre_es = 1500.0f / (fre_sum * 1.0f / fre_count);
+ 299   2                      amp_es = 5.0f * ((ad_max-ad_min)/256.0f);
+ 300   2                      fre_sum = 0;fre_count = 0;
+ 301   2                      time_count = 0;
+ 302   2                      fre_p1 = fre_p2 = 0;
+ 303   2                      amp_p1 = amp_p2 = 129;
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 6   
+
+ 304   2                      ad_max = ad_min = 128;
+ 305   2              }
+ 306   1      }
+ 307          
+ 308          void mode_select()      // 模式选择
+ 309          {
+ 310   1              switch(key_num){
+ 311   2                      case 1:{                // 模式1：实时采样+存储，信号发生器
+ 312   3                              mode = 1;
+ 313   3                              fdisp(1,0); // 数码管最左端显示模式1
+ 314   3                              fdisp(0,1);
+ 315   3                              fdisp(0,2);
+ 316   3                              fdisp(wave_sel,3);
+ 317   3                      };break;
+ 318   2                      case 2:{                // 模式2：实时采样，波形回放
+ 319   3                              mode = 2;
+ 320   3                              fdisp(2,0);     // 数码管最左端显示模式2
+ 321   3                              fdisp(0,1);
+ 322   3                              fdisp(0,2);
+ 323   3                              fdisp(0,3);     // 数码管最右端波形显示清零     
+ 324   3                      };break;
+ 325   2                      case 3:{                // 模式3：测量实时采样的幅值和频率（或周期）
+ 326   3                              mode = 3;
+ 327   3                              fdisp(3,0);
+ 328   3                              fdisp(0,1);
+ 329   3                              fdisp(0,2);
+ 330   3                              fdisp(0,3);
+ 331   3                      };break;
+ 332   2                      case 4:{                // 信号发生器调频调幅
+ 333   3                              mode = 4;                       
+ 334   3                              fdisp(4,0);               // 数码管最左端显示模式4
+ 335   3                              fdisp(0,1);
+ 336   3                              fdisp(0,2);
+ 337   3                              fdisp(wave_sel,3);// 数码管最右端显示波形       
+ 338   3                      };break;
+ 339   2                      case 5:{
+ 340   3                              if(mode == 1){                  // 模式1下，按键5表示选择正弦波
+ 341   4                                      wave_sel = SIN;
+ 342   4                                      fdisp(wave_sel,3);      // 在数码管最右端显示波形选择
+ 343   4                              }
+ 344   3                              else if(mode == 2){;}
+ 345   3                              else if(mode == 3){             // 模式3下，按键5显示测量频率
+ 346   4                                      flag_amp = 0;                                                                                                                            
+ 347   4                                      flag_fre = 1;
+ 348   4                              }
+ 349   3                              else if(mode == 4){             // 模式4下，按键5表示频率1
+ 350   4                                      if(fre_modi){
+ 351   5                                              gen_count = 4;
+ 352   5                                      }
+ 353   4                                      if(amp_modi){
+ 354   5                                              da_index = 2;
+ 355   5                                      }
+ 356   4                              }
+ 357   3                      };break;
+ 358   2                      case 6:{
+ 359   3                              if(mode == 1){                  // 模式1下，按键5表示选择三角波
+ 360   4                                      wave_sel = TRI;
+ 361   4                                      fdisp(wave_sel,3);
+ 362   4                              }
+ 363   3                              else if(mode == 3){             // 模式3下，按键6表示测量幅值
+ 364   4                                      flag_fre = 0;
+ 365   4                                      flag_amp = 1;           
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 7   
+
+ 366   4                              } 
+ 367   3                              else if(mode == 4){             // 模式4下，按键6表示频率2
+ 368   4                                      if(fre_modi){
+ 369   5                                              gen_count = 3;
+ 370   5                                      }
+ 371   4                                      if(amp_modi){
+ 372   5                                              da_index = 3;
+ 373   5                                      }
+ 374   4                              }       
+ 375   3                      };break;
+ 376   2                      case 7:{
+ 377   3                              if(mode == 1){                  // 模式1下，按键7表示选择方波
+ 378   4                                      wave_sel = REC;         
+ 379   4                                      fdisp(wave_sel,3);      
+ 380   4                              }
+ 381   3                              else if(mode == 3){
+ 382   4                                      fre_modi = 1;
+ 383   4                                      amp_modi = 0;
+ 384   4                              }
+ 385   3                              else if(mode == 4){             // 模式4下，按键7表示幅度减小,频率3
+ 386   4                                      if(fre_modi){
+ 387   5                                              gen_count = 2;
+ 388   5                                      }
+ 389   4                                      if(amp_modi){
+ 390   5                                              da_index = 4;
+ 391   5                                      }
+ 392   4                              }
+ 393   3                      };break;
+ 394   2                      case 8:{                                        
+ 395   3                              if(mode == 1){                  // 模式1下，按键8表示选择锯齿波
+ 396   4                                      wave_sel = SAW;
+ 397   4                                      fdisp(wave_sel,3);
+ 398   4                              }
+ 399   3                              else if(mode == 3){
+ 400   4                                      fre_modi = 0;
+ 401   4                                      amp_modi = 1;
+ 402   4                              }
+ 403   3                              else if(mode == 4){             // 模式4下，按键8表示幅度增大,频率4
+ 404   4                                      if(fre_modi){
+ 405   5                                              gen_count = 1;
+ 406   5                                      }
+ 407   4                                      if(amp_modi){
+ 408   5                                              da_index = 5;
+ 409   5                                      }
+ 410   4                              }
+ 411   3                      }; break;
+ 412   2                      default:break;
+ 413   2              }
+ 414   1              
+ 415   1      }
+ 416          void key_service()
+ 417          {
+ 418   1              if(key_sta & 0x01) return;//key_sta.0 = 1，按键为按下状态
+ 419   1              // key_sta.0 = 0，按键为弹起状态，检测到KEY1/KEY2行有按键被按下
+ 420   1              if(KEY1){
+ 421   2                      key_num = key_col + 1; 
+ 422   2                      key_sta = key_sta | 0x01;//key_sta.0 = 1
+ 423   2              }       
+ 424   1              else if(KEY2){
+ 425   2                      key_num = key_col + 5;
+ 426   2                      key_sta = key_sta | 0x01;//key_sta.0 = 1        
+ 427   2              }
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 8   
+
+ 428   1              
+ 429   1      }
+ 430          
+ 431          void ad_save() // A/D采样值存储
+ 432          {
+ 433   1          ad_memo[memo_p++] = ad_result;
+ 434   1          if (memo_p >= MEMO_LEN)
+ 435   1          {
+ 436   2              memo_p = 0;
+ 437   2          }
+ 438   1      }
+ 439          
+ 440          void dsptask()
+ 441          {
+ 442   1          unsigned char i;    // for loop 临时变量
+ 443   1          unsigned char a, b; // a:数码管位选，b:掩码
+ 444   1      
+ 445   1          // 数码管位选
+ 446   1          switch (sel)
+ 447   1          {
+ 448   2          case 0:        // L1-T204
+ 449   2              a = 0x01;
+ 450   2              break; 
+ 451   2          case 1:        // L2-T203
+ 452   2              a = 0x02;  
+ 453   2              break; 
+ 454   2          case 2:        // L3-T202
+ 455   2              a = 0x04;
+ 456   2              break;          
+ 457   2          default:   // L4-T201
+ 458   2              a = 0x08; 
+ 459   2          }
+ 460   1              // 将表示数码管位选的信息输入到74HC565的高位8bit 
+ 461   1              // 对应数码管的COM1为高电平（共阳极数码管）
+ 462   1          for (b = 0x80, i = 0; i < 8; i++)
+ 463   1          {
+ 464   2              if (a & b)
+ 465   2                  D_SER = 1;
+ 466   2              else
+ 467   2                  D_SER = 0;
+ 468   2              D_SRCLK = 0;
+ 469   2              D_SRCLK = 1;
+ 470   2              D_SRCLK = 0;
+ 471   2              b = b >> 1;
+ 472   2              // b=b&0x7f;
+ 473   2          }
+ 474   1          // 载入位选数码管对应的显示内容
+ 475   1          a = dspbuf[sel];
+ 476   1              // 按键列选择
+ 477   1              key_col = sel;
+ 478   1              // 索引改变，选择下一个数码管
+ 479   1          sel++;
+ 480   1          if (sel >= 4)
+ 481   1              sel = 0; 
+ 482   1              // 将数码管对应显示内容输入到级联74HC565的低8bit
+ 483   1          for (b = 0x80, i = 0; i < 8; i++)
+ 484   1          {
+ 485   2              if (a & b)
+ 486   2                  D_SER = 1;
+ 487   2              else
+ 488   2                  D_SER = 0;
+ 489   2              D_SRCLK = 0;
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 9   
+
+ 490   2              D_SRCLK = 1;
+ 491   2              D_SRCLK = 0;
+ 492   2              b = b >> 1;
+ 493   2              // b=b&0x7fff;
+ 494   2          }
+ 495   1          D_RCLK = 0;
+ 496   1          D_RCLK = 1;
+ 497   1          D_RCLK = 0;
+ 498   1      }
+ 499          void fdisp(unsigned char n,unsigned char m)
+ 500          {
+ 501   1              char c;
+ 502   1              switch(n){
+ 503   2                      case 0: c = 0x11; break;
+ 504   2                      case 1: c = 0x7d; break;
+ 505   2                      case 2: c = 0x23; break;
+ 506   2                      case 3: c = 0x29; break;
+ 507   2                      case 4: c = 0x4d; break;
+ 508   2                      case 5: c = 0x89; break;
+ 509   2                      case 6: c = 0x81; break;
+ 510   2                      case 7: c = 0x3d; break;
+ 511   2                      case 8: c = 0x01; break;
+ 512   2                      case 9: c = 0x09; break;
+ 513   2                      default:c = 0xff; break;
+ 514   2              }
+ 515   1              dspbuf[m] = c;
+ 516   1      }
+ 517          unsigned char GetADC()
+ 518          {
+ 519   1          ADC_CONTR = ADC_CONTR | ADC_POWER | 3 | ADC_START;
+ 520   1          _nop_(); // wait
+ 521   1          _nop_();
+ 522   1          _nop_();
+ 523   1          _nop_();
+ 524   1          while (!(ADC_CONTR & ADC_FLAG))
+ 525   1              ;                   // 等待A/D标志位变1，ADC_FLAG
+ 526   1          ADC_CONTR &= ~ADC_FLAG; // 标志位清零
+ 527   1          return ADC_RES;
+ 528   1      }
+ 529          
+ 530          
+ 531          void init_ad() // ad寄存器初始化
+ 532          {
+ 533   1          P1ASF = 0x08;     // P1.3作为ad输入
+ 534   1          ADC_CONTR = 0xE3; // ADC控制寄存器         Bit7    Bit6    Bit5    Bit4    Bit3    Bit2    Bit1    Bit
+             -0
+ 535   1                            // 位描述            ADC_POWER  SPEED1 SPEED0 ADC_FLAG ADC_START CHS2    CHS1    CHS
+             -0
+ 536   1                            // 初始值=0000,0000      0       0       0       0       0       0       0       0
+ 537   1                            // 设置值=0000,0000      1       1       1       0       0       0       1       1
+ 538   1          AUXR1 &= 0xfb;    // 高8位存储在在ADC_RES
+ 539   1          CLK_DIV = 0x01;   // 系统时钟/2
+ 540   1      }
+ 541          void init_special_interrupts() // 中断初始化
+ 542          {
+ 543   1          EX0 = 0;
+ 544   1          ET0 = 1; // 定时器0中断
+ 545   1          EX1 = 0;
+ 546   1          ET1 = 1; // 定时器1中断
+ 547   1          ES = 1;
+ 548   1          EA = 1; // 总中断
+ 549   1          PT0 = 0;
+C51 COMPILER V9.01   TEST                                                                  06/01/2023 14:04:04 PAGE 10  
+
+ 550   1          PX1 = 1;
+ 551   1          PS = 0;
+ 552   1      }
+ 553          void init_timer0() // 定时器0初始化
+ 554          {                  // 1/4ms
+ 555   1          TMOD &= 0XF0;  // Timer0设置清除
+ 556   1          TMOD |= 0X02;  // 8位自动重载
+ 557   1          TL0 = 0X06;
+ 558   1          TH0 = 0X06;
+ 559   1          TR0 = 1;
+ 560   1          ET0 = 1;
+ 561   1      }
+ 562          
+ 563          
+ 564          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1907    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   8000    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     71       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
