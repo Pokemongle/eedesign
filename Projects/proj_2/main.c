@@ -25,6 +25,7 @@ void main()
     init_timer0();
     init_special_interrupts();
     init_ad();
+	/*
     while (1)
     { 
 		if(key_sta & 0x01){//key_sta.0 = 0x01? key_sta.0 = 1检测到按键按下
@@ -41,6 +42,8 @@ void main()
 			default: break;
 		}
     }
+	*/
+
 }
 void interrupt_timer0() interrupt 1 // 定时器0中断处理
 {
