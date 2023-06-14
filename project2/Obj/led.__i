@@ -1,0 +1,1 @@
+"..\..\App\led.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\..\App;..\..\Public) DEBUG OBJECTEXTEND PRINT(.\led.lst) TABS (2) OBJECT(..\..\Obj\led.obj)

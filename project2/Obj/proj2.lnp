@@ -1,0 +1,7 @@
+"..\..\Obj\STARTUP.obj",
+"..\..\Obj\main.obj",
+"..\..\Obj\adda.obj",
+"..\..\Obj\key.obj",
+"..\..\Obj\led.obj" 
+TO "..\..\Obj\proj2" 
+PRINT(".\proj2.m51")

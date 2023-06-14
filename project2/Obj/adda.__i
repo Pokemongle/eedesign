@@ -1,0 +1,1 @@
+"..\..\App\adda.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\..\App;..\..\Public) DEBUG OBJECTEXTEND PRINT(.\adda.lst) TABS (2) OBJECT(..\..\Obj\adda.obj)
